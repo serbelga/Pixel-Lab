@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".EditorFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <com.example.sergiobelda.photoeditor.EditableImageView
+                android:layout_width="360dp"
+                android:layout_height="200dp"
+                android:src="@color/colorPrimaryDark"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginTop="8dp"
+                app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent" android:id="@+id/myImageView"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
+            android:layout_gravity="bottom"
+            app:menu="@menu/editor_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+            android:id="@+id/bottom_drawer"
+            style="@style/Widget.MaterialComponents.BottomSheet.Modal"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:elevation="16dp"
+            app:behavior_hideable="true"
+            app:backgroundTint="?attr/colorSecondary"
+            app:behavior_peekHeight="60dp"
+            app:layout_behavior="@string/bottom_sheet_behavior">
+
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <com.google.android.material.button.MaterialButton
+                    android:text="Linias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/squareToolButton"
+                    android:text="Cuadrados"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+        <com.google.android.material.tabs.TabLayout
+                app:tabMode="scrollable"
+                style="@style/Widget.MaterialComponents.TabLayout.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <com.google.android.material.tabs.TabItem
+                    android:text="Líneas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                    android:text="Multilíneas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                    android:text="Cuadrados"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                    android:text="Esferas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+        </com.google.android.material.tabs.TabLayout>
+
+    </RelativeLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
