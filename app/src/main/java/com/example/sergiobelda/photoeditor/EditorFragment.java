@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +26,9 @@ public class EditorFragment extends Fragment {
     EditableImageView editableImageView;
     View bottomSheetPersistent;
     BottomSheetBehavior bottomSheetBehavior;
+    BottomNavigationView bottomNavigationView;
     Button squareToolButton;
+    int currentColor;
     private RadioGroup colorsRadioGroup;
     public EditorFragment() {
         // Required empty public constructor
@@ -44,10 +47,15 @@ public class EditorFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         editableImageView = view.findViewById(R.id.myImageView);
         bottomSheetPersistent = view.findViewById(R.id.bottom_drawer);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetPersistent);
         squareToolButton = view.findViewById(R.id.squareToolButton);
-        bottomSheetBehavior.setBottomSheetCallback(createBottomSheetCallback());
-        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottom_navigation);
+        colorsRadioGroup = view.findViewById(R.id.colorsRadioGroup);
+        bottomNavigationView = view.findViewById(R.id.bottom_navigation);
+        initializeBottomSheetBehavior();
+        initializeBottomNavigationView();
+        initializeColorsRadioGroup();
+    }
+
+    private void initializeBottomNavigationView() {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -60,20 +68,22 @@ public class EditorFragment extends Fragment {
                 return true;
             }
         });
-        squareToolButton.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    editableImageView.setSquareTool(true);
-                                                }
-                                            }
+    }
 
-        );
+    private void initializeBottomSheetBehavior() {
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetPersistent);
+        bottomSheetBehavior.setBottomSheetCallback(createBottomSheetCallback());
+    }
 
-
-
-        colorsRadioGroup = view.findViewById(R.id.colorsRadioGroup);
-        initializeColors(
-                colorsRadioGroup);
+    private void initializeColorsRadioGroup() {
+        initializeColors(colorsRadioGroup);
+        colorsRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                currentColor = checkedId;
+                Log.d("CurrentColor:", String.valueOf(currentColor));
+            }
+        });
     }
 
     private BottomSheetBehavior.BottomSheetCallback createBottomSheetCallback() {
@@ -101,20 +111,28 @@ public class EditorFragment extends Fragment {
         return bottomSheetCallback;
     }
 
+    /**
+     *
+     * @param group
+     */
     private void initializeColors(
             RadioGroup group) {
         int[] colorsArray = getResources().getIntArray(R.array.palette);
-
         for (int i = 0; i < colorsArray.length; i++) {
             AppCompatRadioButton button = new AppCompatRadioButton(getContext());
 
             CompoundButtonCompat.setButtonTintList(
                     button, ColorStateList.valueOf(convertToDisplay(colorsArray[i])));
-
+            button.setId(colorsArray[i]);
             group.addView(button);
         }
     }
 
+    /**
+     *
+     * @param color
+     * @return
+     */
     @ColorInt
     private int convertToDisplay(@ColorInt int color) {
         return color == Color.WHITE ? Color.BLACK : color;
