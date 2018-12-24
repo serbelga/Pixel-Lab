@@ -1,14 +1,19 @@
 package com.example.sergiobelda.photoeditor;
 
 
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.widget.RadioGroup;
+import androidx.annotation.*;
+import androidx.appcompat.widget.AppCompatRadioButton;
+import androidx.core.widget.CompoundButtonCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -21,6 +26,7 @@ public class EditorFragment extends Fragment {
     View bottomSheetPersistent;
     BottomSheetBehavior bottomSheetBehavior;
     Button squareToolButton;
+    private RadioGroup colorsRadioGroup;
     public EditorFragment() {
         // Required empty public constructor
     }
@@ -62,6 +68,12 @@ public class EditorFragment extends Fragment {
                                             }
 
         );
+
+
+
+        colorsRadioGroup = view.findViewById(R.id.colorsRadioGroup);
+        initializeColors(
+                colorsRadioGroup);
     }
 
     private BottomSheetBehavior.BottomSheetCallback createBottomSheetCallback() {
@@ -87,5 +99,24 @@ public class EditorFragment extends Fragment {
                     public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
                 };
         return bottomSheetCallback;
+    }
+
+    private void initializeColors(
+            RadioGroup group) {
+        int[] colorsArray = getResources().getIntArray(R.array.palette);
+
+        for (int i = 0; i < colorsArray.length; i++) {
+            AppCompatRadioButton button = new AppCompatRadioButton(getContext());
+
+            CompoundButtonCompat.setButtonTintList(
+                    button, ColorStateList.valueOf(convertToDisplay(colorsArray[i])));
+
+            group.addView(button);
+        }
+    }
+
+    @ColorInt
+    private int convertToDisplay(@ColorInt int color) {
+        return color == Color.WHITE ? Color.BLACK : color;
     }
 }

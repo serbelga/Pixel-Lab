@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="palette">
+        <item>@color/black</item>
+        <item>@color/red</item>
+        <item>@color/redDark</item>
+        <item>@color/yellowDark</item>
+        <item>@color/yellow</item>
+        <item>@color/teal</item>
+        <item>@color/blue</item>
+        <item>@color/purpleDark</item>
+        <item>@color/purple</item>
+    </array>
+</resources>

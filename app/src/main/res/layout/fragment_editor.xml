@@ -12,7 +12,7 @@
         <com.example.sergiobelda.photoeditor.EditableImageView
                 android:layout_width="360dp"
                 android:layout_height="200dp"
-                android:src="@color/colorPrimaryDark"
+                android:src="@color/blue"
                 app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginTop="8dp"
                 app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
@@ -38,7 +38,6 @@
             app:behavior_peekHeight="60dp"
             app:layout_behavior="@string/bottom_sheet_behavior">
 
-
         <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -57,25 +56,43 @@
                 app:tabMode="scrollable"
                 style="@style/Widget.MaterialComponents.TabLayout.Colored"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content" android:layout_marginTop="0dp"
+                android:layout_alignParentTop="true" android:layout_alignParentStart="true"
+                android:layout_marginStart="0dp" android:layout_alignParentEnd="true" android:layout_marginEnd="0dp">
             <com.google.android.material.tabs.TabItem
-                    android:text="Líneas"
+                    android:icon="@drawable/ic_sharp_brush_24px"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             <com.google.android.material.tabs.TabItem
-                    android:text="Multilíneas"
+                    android:icon="@drawable/ic_sharp_crop_square_24px"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             <com.google.android.material.tabs.TabItem
-                    android:text="Cuadrados"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            <com.google.android.material.tabs.TabItem
-                    android:text="Esferas"
+                    android:icon="@drawable/ic_sharp_face_24px"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
         </com.google.android.material.tabs.TabLayout>
 
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginBottom="40dp" android:layout_marginTop="40dp">
+
+            <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                <RadioGroup
+                        android:id="@+id/colorsRadioGroup"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                </RadioGroup>
+            </HorizontalScrollView>
+
+        </LinearLayout>
     </RelativeLayout>
 
 
