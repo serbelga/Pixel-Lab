@@ -1,4 +1,3 @@
 # PixelLab
 
-![Alt text](./assets/icon.svg?sanitize=true)
-<img src="./assets/icon.svg?sanitize=true">
+![Alt text]<img src="./assets/icon.svg?sanitize=true">
