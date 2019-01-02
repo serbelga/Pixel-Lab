@@ -1,19 +1,13 @@
 package com.example.sergiobelda.photoeditor.ui;
 
 
-import android.content.res.ColorStateList;
-import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RadioGroup;
 import androidx.annotation.*;
-import androidx.appcompat.widget.AppCompatRadioButton;
-import androidx.core.widget.CompoundButtonCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -29,22 +23,20 @@ import com.google.android.material.tabs.TabLayout;
  * A simple {@link Fragment} subclass.
  */
 public class EditorFragment extends Fragment {
-    EditableImageView editableImageView;
-    View bottomSheetPersistent;
-    BottomSheetBehavior bottomSheetBehavior;
-    BottomNavigationView bottomNavigationView;
-    Button squareToolButton;
-    int currentColor;
-    private RadioGroup colorsRadioGroup;
+    private EditableImageView editableImageView;
+    private BottomNavigationView bottomNavigationView;
 
-    public ViewPager viewPager;
-    public TabLayout tabLayout;
+    private View toolsBottomSheet;
+    private BottomSheetBehavior toolsBottomSheetBehavior;
+    private ViewPager toolsViewPager;
+    private TabLayout toolsTabLayout;
     public TabItem tabPaint, tabFigure, tabSticker;
-    
+
+    int currentColor;
+
     public EditorFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,13 +49,10 @@ public class EditorFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         editableImageView = view.findViewById(R.id.myImageView);
-        bottomSheetPersistent = view.findViewById(R.id.bottom_drawer);
-        //squareToolButton = view.findViewById(R.id.squareToolButton);
-        colorsRadioGroup = view.findViewById(R.id.colorsRadioGroup);
+        toolsBottomSheet = view.findViewById(R.id.toolsBottomSheet);
         bottomNavigationView = view.findViewById(R.id.bottom_navigation);
-
-        tabLayout = view.findViewById(R.id.tabLayout);
-        viewPager = view.findViewById(R.id.viewPager);
+        toolsTabLayout = view.findViewById(R.id.toolsTabLayout);
+        toolsViewPager = view.findViewById(R.id.toolsViewPager);
         tabFigure = view.findViewById(R.id.tabFigure);
         tabPaint = view.findViewById(R.id.tabPaint);
         tabSticker = view.findViewById(R.id.tabSticker);
@@ -71,19 +60,14 @@ public class EditorFragment extends Fragment {
         initializeViewPager();
         initializeBottomSheetBehavior();
         initializeBottomNavigationView();
-        initializeColorsRadioGroup();
-    }
-
-    private void initializeViewPager() {
-        MyViewPagerAdapter pagerAdapter = new MyViewPagerAdapter(getFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(pagerAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
     }
 
     private void initializeTabLayout() {
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        toolsTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(toolsViewPager){
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                super.onTabSelected(tab);
+                toolsViewPager.setCurrentItem(tab.getPosition());
                 if (tab.getPosition() == 0){
                     editableImageView.setFigureMode(0);
                 } else {
@@ -93,14 +77,48 @@ public class EditorFragment extends Fragment {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                super.onTabUnselected(tab);
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                super.onTabReselected(tab);
             }
         });
+    }
+
+    private void initializeViewPager() {
+        final ToolsViewPagerAdapter pagerAdapter = new ToolsViewPagerAdapter(getFragmentManager(), toolsTabLayout.getTabCount());
+        toolsViewPager.setAdapter(pagerAdapter);
+        toolsViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(toolsTabLayout));
+    }
+
+    private void initializeBottomSheetBehavior() {
+        toolsBottomSheetBehavior = BottomSheetBehavior.from(toolsBottomSheet);
+        toolsBottomSheetBehavior.setBottomSheetCallback(createBottomSheetCallback());
+        toolsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    private BottomSheetBehavior.BottomSheetCallback createBottomSheetCallback() {
+        // Set up BottomSheetCallback
+        return new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
+        };
     }
 
     private void initializeBottomNavigationView() {
@@ -109,7 +127,7 @@ public class EditorFragment extends Fragment {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.tools:
-                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        toolsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                         break;
                     case R.id.export:
                 }
@@ -118,78 +136,10 @@ public class EditorFragment extends Fragment {
         });
     }
 
-    private void initializeBottomSheetBehavior() {
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetPersistent);
-        bottomSheetBehavior.setBottomSheetCallback(createBottomSheetCallback());
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-    }
-
-    private void initializeColorsRadioGroup() {
-        initializeColors(colorsRadioGroup);
-        colorsRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                currentColor = checkedId;
-                Log.d("CurrentColor:", String.valueOf(currentColor));
-            }
-        });
-    }
-
-    private BottomSheetBehavior.BottomSheetCallback createBottomSheetCallback() {
-        // Set up BottomSheetCallback
-        BottomSheetBehavior.BottomSheetCallback bottomSheetCallback =
-                new BottomSheetBehavior.BottomSheetCallback() {
-                    @Override
-                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-
-                        switch (newState) {
-                            case BottomSheetBehavior.STATE_DRAGGING:
-                                break;
-                            case BottomSheetBehavior.STATE_EXPANDED:
-                                break;
-                            case BottomSheetBehavior.STATE_COLLAPSED:
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
-                };
-        return bottomSheetCallback;
-    }
-
-    /**
-     *
-     * @param group
-     */
-    private void initializeColors(
-            RadioGroup group) {
-        int[] colorsArray = getResources().getIntArray(R.array.palette);
-        for (int i = 0; i < colorsArray.length; i++) {
-            AppCompatRadioButton button = new AppCompatRadioButton(getContext());
-            CompoundButtonCompat.setButtonTintList(
-                    button, ColorStateList.valueOf(convertToDisplay(colorsArray[i])));
-            button.setId(colorsArray[i]);
-            group.addView(button);
-        }
-    }
-
-    /**
-     *
-     * @param color
-     * @return
-     */
-    @ColorInt
-    private int convertToDisplay(@ColorInt int color) {
-        return color == Color.WHITE ? Color.BLACK : color;
-    }
-
-    private class MyViewPagerAdapter extends FragmentPagerAdapter {
+    private class ToolsViewPagerAdapter extends FragmentPagerAdapter {
         private int tabsNum;
 
-        public MyViewPagerAdapter(@NonNull FragmentManager fm, int tabsNum) {
+        ToolsViewPagerAdapter(@NonNull FragmentManager fm, int tabsNum) {
             super(fm);
             this.tabsNum = tabsNum;
         }
@@ -198,16 +148,17 @@ public class EditorFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             Fragment fragment = null;
-            if (position == 0)
-            {
+            if (position == 0) {
                 fragment = new TabPaint();
-            }
-            else if (position == 1)
-            {
+                ((TabPaint) fragment).setTabPaintListener(new TabPaint.TabPaintListener() {
+                    @Override
+                    public void onColorSelected(int currentColor) {
+                        editableImageView.setImageDrawable(new ColorDrawable(currentColor));
+                    }
+                });
+            } else if (position == 1) {
                 fragment = new TabFigure();
-            }
-            else if (position == 2)
-            {
+            } else if (position == 2) {
                 fragment = new TabSticker();
             }
             return fragment;

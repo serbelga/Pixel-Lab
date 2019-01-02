@@ -14,11 +14,9 @@ import com.example.sergiobelda.photoeditor.R;
  */
 public class TabFigure extends Fragment {
 
-
     public TabFigure() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -26,5 +24,4 @@ public class TabFigure extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tab_figure, container, false);
     }
-
 }

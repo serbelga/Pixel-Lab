@@ -18,11 +18,9 @@ import com.example.sergiobelda.photoeditor.R;
  */
 public class StartFragment extends Fragment {
 
-
     public StartFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

@@ -27,8 +27,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-    <RelativeLayout
-            android:id="@+id/bottom_drawer"
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolsBottomSheet"
             style="@style/Widget.MaterialComponents.BottomSheet.Modal"
             android:layout_width="match_parent"
             android:layout_height="120dp"
@@ -40,12 +40,14 @@
 
         <com.google.android.material.tabs.TabLayout
                 app:tabMode="scrollable"
+                app:tabIndicatorFullWidth="false"
                 style="@style/Widget.MaterialComponents.TabLayout.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:layout_marginTop="0dp"
                 android:layout_alignParentTop="true" android:layout_alignParentStart="true"
                 android:layout_marginStart="0dp" android:layout_alignParentEnd="true" android:layout_marginEnd="0dp"
-                android:id="@+id/tabLayout">
+                android:id="@+id/toolsTabLayout">
+
             <com.google.android.material.tabs.TabItem
                     android:icon="@drawable/ic_sharp_brush_24px"
                     android:layout_width="wrap_content"
@@ -61,32 +63,10 @@
         </com.google.android.material.tabs.TabLayout>
 
         <androidx.viewpager.widget.ViewPager
-                android:id="@+id/viewPager"
+                android:id="@+id/toolsViewPager"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/toolsTabLayout">
         </androidx.viewpager.widget.ViewPager>
-
-        <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="0dp"
-                android:layout_marginBottom="40dp" android:layout_marginTop="40dp">
-
-            <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                <RadioGroup
-                        android:id="@+id/colorsRadioGroup"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                </RadioGroup>
-            </HorizontalScrollView>
-
-        </LinearLayout>
-    </RelativeLayout>
-
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

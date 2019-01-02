@@ -3,11 +3,18 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             android:padding="8dp"
              tools:context=".ui.TabPaint">
 
-    <TextView
+    <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Paints"/>
+            android:layout_height="match_parent" tools:ignore="UselessParent">
+        <RadioGroup
+                android:id="@+id/colorsRadioGroup"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+        </RadioGroup>
+    </HorizontalScrollView>
 
 </FrameLayout>
