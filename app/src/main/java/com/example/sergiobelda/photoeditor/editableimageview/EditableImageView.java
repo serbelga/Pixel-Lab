@@ -26,8 +26,13 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
     private final int SQUARE_MODE = 0;
     private final int CIRCLE_MODE = 1;
     private final int LINE_MODE = 2;
-    private final int STICKER_MODE = 3;
-    int figureMode;
+
+    private final int PAINT_MODE = 0;
+    private final int FIGURE_MODE = 1;
+    private final int STICKER_MODE = 2;
+
+    int figureMode = 0;
+    int editMode = -1;
 
     public EditableImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -102,6 +107,10 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
 
     public void setFigureMode(int figureMode) {
         this.figureMode = figureMode;
+    }
+
+    public void setEditMode(int editMode) {
+        this.editMode = editMode;
     }
 
     /**
