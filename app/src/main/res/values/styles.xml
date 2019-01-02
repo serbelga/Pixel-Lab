@@ -15,6 +15,10 @@
         <item name="android:statusBarColor">@color/whiteDark</item>
         <item name="android:windowLightStatusBar">true</item>
 
+        <item name="bottomNavigationStyle">
+            @style/AppBottomNavigation
+        </item>
+
         <item name="materialButtonStyle">
             @style/AppButton
         </item>
@@ -54,6 +58,10 @@
         <item name="shapeAppearanceSmallComponent">@style/SmallComponent</item>
         <item name="shapeAppearanceMediumComponent">@style/MediumComponent</item>
         <item name="shapeAppearanceLargeComponent">@style/LargeComponent</item>
+    </style>
+
+    <style name="AppBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+
     </style>
 
     <style name="ButtonText" parent="TextAppearance.MaterialComponents.Button">

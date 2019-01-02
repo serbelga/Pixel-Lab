@@ -72,12 +72,12 @@ public class EditorFragment extends Fragment {
     }
 
     private void initializeTabLayout() {
-        toolsTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(toolsViewPager){
+        toolsTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(toolsViewPager) {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 super.onTabSelected(tab);
                 toolsViewPager.setCurrentItem(tab.getPosition());
-                if (tab.getPosition() == 0){
+                if (tab.getPosition() == 0) {
                     editableImageView.setEditMode(0);
                 } else {
                     editableImageView.setEditMode(1);
@@ -147,6 +147,7 @@ public class EditorFragment extends Fragment {
         });
     }
 
+
     private void saveImage(){
         editableImageView.setDrawingCacheEnabled(true);
         editableImageView.buildDrawingCache(true);
@@ -163,6 +164,7 @@ public class EditorFragment extends Fragment {
             ostream.close();
         } catch (Exception e) {
             e.printStackTrace();
+            //TODO SnackBar permission not granted
         }
         editableImageView.setDrawingCacheEnabled(false);
     }
@@ -189,6 +191,12 @@ public class EditorFragment extends Fragment {
                 });
             } else if (position == 1) {
                 fragment = new TabFigure();
+                ((TabFigure) fragment).setTabFigureListener(new TabFigure.TabFigureListener() {
+                    @Override
+                    public void onFigureSelected(int currentFigure) {
+                        editableImageView.setFigureMode(currentFigure);
+                    }
+                });
             } else if (position == 2) {
                 fragment = new TabSticker();
             }

@@ -1,11 +1,10 @@
 package com.example.sergiobelda.photoeditor.editableimageview;
 
 public class Circle {
-    private float x, y;
-    private double radius;
+    private float x, y, radius;
     private float color;
 
-    public Circle(float x, float y, double radius, float color) {
+    public Circle(float x, float y, float radius, float color) {
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -28,11 +27,11 @@ public class Circle {
         this.y = y;
     }
 
-    public double getRadius() {
+    public float getRadius() {
         return radius;
     }
 
-    public void setRadius(double radius) {
+    public void setRadius(float radius) {
         this.radius = radius;
     }
 
