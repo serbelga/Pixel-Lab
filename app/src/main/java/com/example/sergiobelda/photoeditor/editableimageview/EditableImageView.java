@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.example.sergiobelda.photoeditor.editableimageview.Figure.*;
+import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.FIGURE;
+
 public class EditableImageView extends androidx.appcompat.widget.AppCompatImageView {
     private float mScaleFactor = 1.f;
     GestureDetector gestureDetector;
@@ -24,13 +27,7 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
     List<Circle> circles;
 
     //Tools
-    private final int SQUARE_MODE = 0;
-    private final int CIRCLE_MODE = 1;
     private final int LINE_MODE = 2;
-
-    private final int PAINT_MODE = 0;
-    private final int FIGURE_MODE = 1;
-    private final int STICKER_MODE = 2;
 
     int figureMode = -1;
     int editMode = -1;
@@ -132,13 +129,13 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             int color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-            if (editMode == FIGURE_MODE) {
+            if (editMode == FIGURE) {
                 switch (figureMode) {
-                    case SQUARE_MODE:
+                    case SQUARE:
                         Square s = new Square(e.getX(), e.getY(), 100, color);
                         squares.add(s);
                         break;
-                    case CIRCLE_MODE:
+                    case CIRCLE:
                         Circle c = new Circle(e.getX(), e.getY(), 50, color);
                         circles.add(c);
                         break;
