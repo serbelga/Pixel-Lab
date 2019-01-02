@@ -7,7 +7,7 @@
     </item>
     <item
             android:id="@+id/export"
-            android:icon="@drawable/ic_sharp_photo_24px"
+            android:icon="@drawable/ic_outline_share_24px"
             android:title="Exportar">
     </item>
 </menu>

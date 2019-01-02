@@ -1,4 +1,4 @@
-package com.example.sergiobelda.photoeditor;
+package com.example.sergiobelda.photoeditor.editableimageview;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.example.sergiobelda.photoeditor.editableimageview.Figure.*;
+import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.FIGURE;
+
 public class EditableImageView extends androidx.appcompat.widget.AppCompatImageView {
     private float mScaleFactor = 1.f;
     GestureDetector gestureDetector;
@@ -21,16 +24,21 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
     Random random = new Random();
     Paint paint = new Paint();
     List<Square> squares;
+    List<Circle> circles;
 
     //Tools
-    public boolean squareTool;
-    public boolean lineTool;
+    private final int LINE_MODE = 2;
+
+    int figureMode = -1;
+    int editMode = -1;
+
+    //Paint
+
 
     public EditableImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         squares = new ArrayList<>();
-        squareTool = false;
-        lineTool = false;
+        circles = new ArrayList<>();
         GestureListener gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(getContext(), gestureListener);
         mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
@@ -42,7 +50,8 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
         mScaleDetector.onTouchEvent(event);
         float xTouch, yTouch;
         Square s = null;
-        switch (event.getAction()) {
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_DOWN:
                 xTouch = event.getX();
                 yTouch = event.getY();
@@ -66,6 +75,7 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
                 break;
         }
         invalidate();
@@ -80,6 +90,10 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
         for (Square s : squares) {
             paint.setColor((int) s.getColor());
             canvas.drawRect((float) (s.getX() - s.getSide()), (float) (s.getY() - s.getSide()), (float) (s.getX() + s.getSide()), (float) (s.getY() + s.getSide()), paint);
+        }
+        for (Circle c : circles) {
+            paint.setColor((int) c.getColor());
+            canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), paint);
         }
         canvas.restore();
     }
@@ -99,18 +113,33 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
         return touched;
     }
 
-    public void setSquareTool(boolean b){
-        squareTool = b;
+    public void setFigureMode(int figureMode) {
+        this.figureMode = figureMode;
     }
 
+    public void setEditMode(int editMode) {
+        this.editMode = editMode;
+    }
+
+    /**
+     * Listener of gesture actions
+     * Double tap: figure mode determinate is the figure will be drawn
+     */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            if (squareTool) {
-                Log.d("Tap: ", Float.toString(e.getX()));
-                int color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-                Square s = new Square(e.getX(), e.getY(), 100, color);
-                squares.add(s);
+            int color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+            if (editMode == FIGURE) {
+                switch (figureMode) {
+                    case SQUARE:
+                        Square s = new Square(e.getX(), e.getY(), 100, color);
+                        squares.add(s);
+                        break;
+                    case CIRCLE:
+                        Circle c = new Circle(e.getX(), e.getY(), 50, color);
+                        circles.add(c);
+                        break;
+                }
             }
             return true;
         }

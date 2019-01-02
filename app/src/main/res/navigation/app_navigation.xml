@@ -4,9 +4,9 @@
             xmlns:tools="http://schemas.android.com/tools" android:id="@+id/app_navigation"
             app:startDestination="@id/startFragment">
 
-    <fragment android:id="@+id/editorFragment" android:name="com.example.sergiobelda.photoeditor.EditorFragment"
+    <fragment android:id="@+id/editorFragment" android:name="com.example.sergiobelda.photoeditor.ui.EditorFragment"
               android:label="fragment_editor" tools:layout="@layout/fragment_editor"/>
-    <fragment android:id="@+id/startFragment" android:name="com.example.sergiobelda.photoeditor.StartFragment"
+    <fragment android:id="@+id/startFragment" android:name="com.example.sergiobelda.photoeditor.ui.StartFragment"
               android:label="StartFragment">
         <action android:id="@+id/editorAction" app:destination="@id/editorFragment"/>
     </fragment>
