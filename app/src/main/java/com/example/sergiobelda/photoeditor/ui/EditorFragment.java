@@ -1,8 +1,13 @@
 package com.example.sergiobelda.photoeditor.ui;
 
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +23,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Random;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,9 +78,9 @@ public class EditorFragment extends Fragment {
                 super.onTabSelected(tab);
                 toolsViewPager.setCurrentItem(tab.getPosition());
                 if (tab.getPosition() == 0){
-                    editableImageView.setFigureMode(0);
+                    editableImageView.setEditMode(0);
                 } else {
-                    editableImageView.setFigureMode(-1);
+                    editableImageView.setEditMode(1);
                 }
             }
 
@@ -130,10 +139,32 @@ public class EditorFragment extends Fragment {
                         toolsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                         break;
                     case R.id.export:
+                        saveImage();
+                        break;
                 }
                 return true;
             }
         });
+    }
+
+    private void saveImage(){
+        editableImageView.setDrawingCacheEnabled(true);
+        editableImageView.buildDrawingCache(true);
+        Bitmap bitmap = editableImageView.getDrawingCache();
+        File root = Environment.getExternalStorageDirectory();
+        Random rnd = new Random();
+        int i = rnd.nextInt(1000);
+        File cachePath = new File(root.getAbsolutePath() + "/DCIM/Camera/image_" + String.valueOf(i) + ".jpg");
+        try {
+            cachePath.createNewFile();
+            FileOutputStream ostream = new FileOutputStream(cachePath);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+            ostream.flush();
+            ostream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        editableImageView.setDrawingCacheEnabled(false);
     }
 
     private class ToolsViewPagerAdapter extends FragmentPagerAdapter {
@@ -153,7 +184,7 @@ public class EditorFragment extends Fragment {
                 ((TabPaint) fragment).setTabPaintListener(new TabPaint.TabPaintListener() {
                     @Override
                     public void onColorSelected(int currentColor) {
-                        editableImageView.setImageDrawable(new ColorDrawable(currentColor));
+                        //editableImageView.setImageDrawable(new ColorDrawable(currentColor));
                     }
                 });
             } else if (position == 1) {
