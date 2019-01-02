@@ -28,6 +28,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Random;
 
+import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.FIGURE;
+import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.PAINT;
+import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.STICKER;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -77,10 +81,12 @@ public class EditorFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 super.onTabSelected(tab);
                 toolsViewPager.setCurrentItem(tab.getPosition());
-                if (tab.getPosition() == 0) {
-                    editableImageView.setEditMode(0);
-                } else {
-                    editableImageView.setEditMode(1);
+                if (tab.getPosition() == PAINT) {
+                    editableImageView.setEditMode(PAINT);
+                } else if (tab.getPosition() == FIGURE) {
+                    editableImageView.setEditMode(FIGURE);
+                } else if (tab.getPosition() == STICKER) {
+                    editableImageView.setEditMode(STICKER);
                 }
             }
 
@@ -181,7 +187,7 @@ public class EditorFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             Fragment fragment = null;
-            if (position == 0) {
+            if (position == PAINT) {
                 fragment = new TabPaint();
                 ((TabPaint) fragment).setTabPaintListener(new TabPaint.TabPaintListener() {
                     @Override
@@ -189,7 +195,7 @@ public class EditorFragment extends Fragment {
                         //editableImageView.setImageDrawable(new ColorDrawable(currentColor));
                     }
                 });
-            } else if (position == 1) {
+            } else if (position == FIGURE) {
                 fragment = new TabFigure();
                 ((TabFigure) fragment).setTabFigureListener(new TabFigure.TabFigureListener() {
                     @Override
@@ -197,8 +203,14 @@ public class EditorFragment extends Fragment {
                         editableImageView.setFigureMode(currentFigure);
                     }
                 });
-            } else if (position == 2) {
+            } else if (position == STICKER) {
                 fragment = new TabSticker();
+                ((TabSticker) fragment).setTabStickerListener(new TabSticker.TabStickerListener() {
+                    @Override
+                    public void onStickerSelected() {
+                        //TODO
+                    }
+                });
             }
             return fragment;
         }
