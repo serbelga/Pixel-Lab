@@ -1,4 +1,4 @@
-package com.example.sergiobelda.photoeditor;
+package com.example.sergiobelda.photoeditor.ui;
 
 
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import com.example.sergiobelda.photoeditor.R;
 
 
 /**

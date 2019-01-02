@@ -1,4 +1,4 @@
-package com.example.sergiobelda.photoeditor;
+package com.example.sergiobelda.photoeditor.editableimageview;
 
 public class Square {
     private float x, y;

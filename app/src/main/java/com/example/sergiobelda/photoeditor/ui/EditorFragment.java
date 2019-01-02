@@ -1,8 +1,7 @@
-package com.example.sergiobelda.photoeditor;
+package com.example.sergiobelda.photoeditor.ui;
 
 
 import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,8 +15,15 @@ import androidx.annotation.*;
 import androidx.appcompat.widget.AppCompatRadioButton;
 import androidx.core.widget.CompoundButtonCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import com.example.sergiobelda.photoeditor.R;
+import com.example.sergiobelda.photoeditor.editableimageview.EditableImageView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.tabs.TabItem;
+import com.google.android.material.tabs.TabLayout;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +36,11 @@ public class EditorFragment extends Fragment {
     Button squareToolButton;
     int currentColor;
     private RadioGroup colorsRadioGroup;
+
+    public ViewPager viewPager;
+    public TabLayout tabLayout;
+    public TabItem tabPaint, tabFigure, tabSticker;
+    
     public EditorFragment() {
         // Required empty public constructor
     }
@@ -47,12 +58,49 @@ public class EditorFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         editableImageView = view.findViewById(R.id.myImageView);
         bottomSheetPersistent = view.findViewById(R.id.bottom_drawer);
-        squareToolButton = view.findViewById(R.id.squareToolButton);
+        //squareToolButton = view.findViewById(R.id.squareToolButton);
         colorsRadioGroup = view.findViewById(R.id.colorsRadioGroup);
         bottomNavigationView = view.findViewById(R.id.bottom_navigation);
+
+        tabLayout = view.findViewById(R.id.tabLayout);
+        viewPager = view.findViewById(R.id.viewPager);
+        tabFigure = view.findViewById(R.id.tabFigure);
+        tabPaint = view.findViewById(R.id.tabPaint);
+        tabSticker = view.findViewById(R.id.tabSticker);
+        initializeTabLayout();
+        initializeViewPager();
         initializeBottomSheetBehavior();
         initializeBottomNavigationView();
         initializeColorsRadioGroup();
+    }
+
+    private void initializeViewPager() {
+        MyViewPagerAdapter pagerAdapter = new MyViewPagerAdapter(getFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+    }
+
+    private void initializeTabLayout() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0){
+                    editableImageView.setFigureMode(0);
+                } else {
+                    editableImageView.setFigureMode(-1);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     private void initializeBottomNavigationView() {
@@ -73,6 +121,7 @@ public class EditorFragment extends Fragment {
     private void initializeBottomSheetBehavior() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetPersistent);
         bottomSheetBehavior.setBottomSheetCallback(createBottomSheetCallback());
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     private void initializeColorsRadioGroup() {
@@ -120,7 +169,6 @@ public class EditorFragment extends Fragment {
         int[] colorsArray = getResources().getIntArray(R.array.palette);
         for (int i = 0; i < colorsArray.length; i++) {
             AppCompatRadioButton button = new AppCompatRadioButton(getContext());
-
             CompoundButtonCompat.setButtonTintList(
                     button, ColorStateList.valueOf(convertToDisplay(colorsArray[i])));
             button.setId(colorsArray[i]);
@@ -136,5 +184,38 @@ public class EditorFragment extends Fragment {
     @ColorInt
     private int convertToDisplay(@ColorInt int color) {
         return color == Color.WHITE ? Color.BLACK : color;
+    }
+
+    private class MyViewPagerAdapter extends FragmentPagerAdapter {
+        private int tabsNum;
+
+        public MyViewPagerAdapter(@NonNull FragmentManager fm, int tabsNum) {
+            super(fm);
+            this.tabsNum = tabsNum;
+        }
+
+        @NonNull
+        @Override
+        public Fragment getItem(int position) {
+            Fragment fragment = null;
+            if (position == 0)
+            {
+                fragment = new TabPaint();
+            }
+            else if (position == 1)
+            {
+                fragment = new TabFigure();
+            }
+            else if (position == 2)
+            {
+                fragment = new TabSticker();
+            }
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return tabsNum;
+        }
     }
 }

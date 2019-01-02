@@ -4,12 +4,12 @@
         xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".EditorFragment">
+        tools:context=".ui.EditorFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <com.example.sergiobelda.photoeditor.EditableImageView
+        <com.example.sergiobelda.photoeditor.editableimageview.EditableImageView
                 android:layout_width="360dp"
                 android:layout_height="200dp"
                 android:src="@color/blue"
@@ -35,43 +35,36 @@
             android:elevation="16dp"
             app:behavior_hideable="true"
             app:backgroundTint="?attr/colorSecondary"
-            app:behavior_peekHeight="60dp"
+            app:behavior_peekHeight="0dp"
             app:layout_behavior="@string/bottom_sheet_behavior">
 
-        <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            <com.google.android.material.button.MaterialButton
-                    android:text="Linias"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            <com.google.android.material.button.MaterialButton
-                    android:id="@+id/squareToolButton"
-                    android:text="Cuadrados"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-        </LinearLayout>
         <com.google.android.material.tabs.TabLayout
                 app:tabMode="scrollable"
                 style="@style/Widget.MaterialComponents.TabLayout.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:layout_marginTop="0dp"
                 android:layout_alignParentTop="true" android:layout_alignParentStart="true"
-                android:layout_marginStart="0dp" android:layout_alignParentEnd="true" android:layout_marginEnd="0dp">
+                android:layout_marginStart="0dp" android:layout_alignParentEnd="true" android:layout_marginEnd="0dp"
+                android:id="@+id/tabLayout">
             <com.google.android.material.tabs.TabItem
                     android:icon="@drawable/ic_sharp_brush_24px"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" android:id="@+id/tabPaint"/>
             <com.google.android.material.tabs.TabItem
                     android:icon="@drawable/ic_sharp_crop_square_24px"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" android:id="@+id/tabFigure"/>
             <com.google.android.material.tabs.TabItem
                     android:icon="@drawable/ic_sharp_face_24px"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" android:id="@+id/tabSticker"/>
         </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+        </androidx.viewpager.widget.ViewPager>
 
         <LinearLayout
                 android:layout_width="wrap_content"

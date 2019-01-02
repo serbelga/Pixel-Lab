@@ -1,4 +1,4 @@
-package com.example.sergiobelda.photoeditor;
+package com.example.sergiobelda.photoeditor.editableimageview;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -23,14 +23,15 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
     List<Square> squares;
 
     //Tools
-    public boolean squareTool;
-    public boolean lineTool;
+    private final int SQUARE_MODE = 0;
+    private final int CIRCLE_MODE = 1;
+    private final int LINE_MODE = 2;
+    private final int STICKER_MODE = 3;
+    int figureMode;
 
     public EditableImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         squares = new ArrayList<>();
-        squareTool = false;
-        lineTool = false;
         GestureListener gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(getContext(), gestureListener);
         mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
@@ -99,18 +100,27 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
         return touched;
     }
 
-    public void setSquareTool(boolean b){
-        squareTool = b;
+    public void setFigureMode(int figureMode) {
+        this.figureMode = figureMode;
     }
 
+    /**
+     * Listener of gesture actions
+     * Double tap: figure mode determinate is the figure will be drawn
+     */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            if (squareTool) {
-                Log.d("Tap: ", Float.toString(e.getX()));
-                int color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-                Square s = new Square(e.getX(), e.getY(), 100, color);
-                squares.add(s);
+            int color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+            switch (figureMode) {
+                case SQUARE_MODE :
+                    Square s = new Square(e.getX(), e.getY(), 100, color);
+                    squares.add(s);
+                    break;
+                case CIRCLE_MODE :
+                    Square s1 = new Square(e.getX(), e.getY(), 100, color);
+                    squares.add(s1);
+                    break;
             }
             return true;
         }
