@@ -5,7 +5,9 @@
             app:startDestination="@id/startFragment">
 
     <fragment android:id="@+id/editorFragment" android:name="com.example.sergiobelda.photoeditor.ui.EditorFragment"
-              android:label="fragment_editor" tools:layout="@layout/fragment_editor"/>
+              android:label="fragment_editor" tools:layout="@layout/fragment_editor">
+        <argument android:name="image" app:argType="string"/>
+    </fragment>
     <fragment android:id="@+id/startFragment" android:name="com.example.sergiobelda.photoeditor.ui.StartFragment"
               android:label="StartFragment">
         <action android:id="@+id/editorAction" app:destination="@id/editorFragment"/>

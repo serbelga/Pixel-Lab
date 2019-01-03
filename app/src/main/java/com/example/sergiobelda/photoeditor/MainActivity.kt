@@ -8,18 +8,20 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
-    val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 99
+    val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 99
+    val PERMISSIONS_REQUEST_CAMERA = 98
+    val PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 97
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                Manifest.permission.READ_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
@@ -30,11 +32,11 @@ class MainActivity : AppCompatActivity() {
                 // No explanation needed, we can request the permission.
 
                 ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
 
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
+                // app-defined int constant. The callback onTouchEvent gets the
                 // result of the request.
             }
         }

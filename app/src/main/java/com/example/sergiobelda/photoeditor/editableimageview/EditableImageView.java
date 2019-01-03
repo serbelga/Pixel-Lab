@@ -5,16 +5,18 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import com.example.sergiobelda.photoeditor.editableimageview.figures.Circle;
+import com.example.sergiobelda.photoeditor.editableimageview.figures.Line;
+import com.example.sergiobelda.photoeditor.editableimageview.figures.Square;
+import com.example.sergiobelda.photoeditor.editableimageview.paint.Path;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-import static com.example.sergiobelda.photoeditor.editableimageview.Figure.*;
+import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.PAINT;
+import static com.example.sergiobelda.photoeditor.editableimageview.figures.Figure.*;
 import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.FIGURE;
 
 public class EditableImageView extends androidx.appcompat.widget.AppCompatImageView {
@@ -26,33 +28,43 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
     List<Square> squares;
     List<Circle> circles;
 
-    //Tools
-    private final int LINE_MODE = 2;
+    Map<Integer, Path> paths;
+    List<Path> pathList;
 
     int figureMode = -1;
     int editMode = -1;
 
-    //Paint
 
+    StrategyTool strategyTool;
+    MyContext myContext;
 
     public EditableImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         squares = new ArrayList<>();
         circles = new ArrayList<>();
+        pathList = new ArrayList<>();
+        paths = new HashMap<>();
+        myContext = new MyContext(this);
         GestureListener gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(getContext(), gestureListener);
-        mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
+        //mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        /*
         gestureDetector.onTouchEvent(event);
-        mScaleDetector.onTouchEvent(event);
+        //mScaleDetector.onTouchEvent(event);
         float xTouch, yTouch;
         Square s = null;
+        int pointerIndex = event.getActionIndex();
+        int id = event.getPointerId(pointerIndex);
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_DOWN:
+                if (editMode == PAINT) {
+                    addPath(id);
+                }
                 xTouch = event.getX();
                 yTouch = event.getY();
                 s = getSquare(xTouch, yTouch);
@@ -64,6 +76,12 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (editMode == PAINT) {
+                    for (int i = 0; i < event.getPointerCount(); i++) {
+                        int mId = event.getPointerId(i);
+                        updateLines(mId, event.getX(i), event.getY(i));
+                    }
+                }
                 xTouch = event.getX();
                 yTouch = event.getY();
                 s = getSquare(xTouch, yTouch);
@@ -76,9 +94,25 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
+                if (editMode == PAINT) {
+                    Path p = new Path(paths.get(id).getLines(), paths.get(id).getColor());
+                    pathList.add(p);
+                    paths.get(id).setLines(new ArrayList<Line>());
+                }
                 break;
         }
         invalidate();
+        */
+        switch (editMode) {
+            case PAINT :
+                myContext.setStrategyTool(new StrategyPaint());
+                myContext.onTouchEvent(event);
+                break;
+            case FIGURE :
+                myContext.setStrategyTool(new StrategyFigure());
+                myContext.onTouchEvent(event);
+                break;
+        }
         return true;
     }
 
@@ -94,6 +128,19 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
         for (Circle c : circles) {
             paint.setColor((int) c.getColor());
             canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), paint);
+        }
+        for (Path p : pathList) {
+            paint.setColor((int) p.getColor());
+            for (Line l : p.getLines()){
+                canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
+            }
+        }
+        for (Integer id : paths.keySet()) {
+            Path path = paths.get(id);
+            paint.setColor(path.getColor());
+            for (Line l : path.getLines()){
+                canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
+            }
         }
         canvas.restore();
     }

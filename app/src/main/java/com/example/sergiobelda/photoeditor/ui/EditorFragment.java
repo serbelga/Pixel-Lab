@@ -1,22 +1,29 @@
 package com.example.sergiobelda.photoeditor.ui;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.*;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import com.bumptech.glide.Glide;
 import com.example.sergiobelda.photoeditor.R;
 import com.example.sergiobelda.photoeditor.editableimageview.EditableImageView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -33,9 +40,11 @@ import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.P
 import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.STICKER;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Editor Fragment.
  */
 public class EditorFragment extends Fragment {
+    private final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 99;
+
     private EditableImageView editableImageView;
     private BottomNavigationView bottomNavigationView;
 
@@ -69,10 +78,17 @@ public class EditorFragment extends Fragment {
         tabFigure = view.findViewById(R.id.tabFigure);
         tabPaint = view.findViewById(R.id.tabPaint);
         tabSticker = view.findViewById(R.id.tabSticker);
+        setImage();
         initializeTabLayout();
         initializeViewPager();
         initializeBottomSheetBehavior();
         initializeBottomNavigationView();
+    }
+
+    //TODO exception
+    private void setImage() {
+        Uri uri = Uri.parse(getArguments().getString("image"));
+        Glide.with(this).load(uri).into(editableImageView);
     }
 
     private void initializeTabLayout() {
@@ -145,7 +161,10 @@ public class EditorFragment extends Fragment {
                         toolsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                         break;
                     case R.id.export:
-                        saveImage();
+                        checkWriteExternalStoragePermission();
+
+                        //TODO animation
+
                         break;
                 }
                 return true;
@@ -153,6 +172,28 @@ public class EditorFragment extends Fragment {
         });
     }
 
+    private void checkWriteExternalStoragePermission() {
+        if (ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+        } else {
+            saveImage();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE :
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    saveImage();
+                }
+                break;
+        }
+    }
 
     private void saveImage(){
         editableImageView.setDrawingCacheEnabled(true);
@@ -170,7 +211,6 @@ public class EditorFragment extends Fragment {
             ostream.close();
         } catch (Exception e) {
             e.printStackTrace();
-            //TODO SnackBar permission not granted
         }
         editableImageView.setDrawingCacheEnabled(false);
     }
