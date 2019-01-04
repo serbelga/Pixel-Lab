@@ -6,27 +6,36 @@
         android:layout_height="match_parent"
         tools:context=".ui.EditorFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:paddingBottom="64dp" android:paddingTop="32dp"
-            android:paddingEnd="8dp" android:paddingStart="8dp">
+            android:layout_height="match_parent"
+            app:layoutDescription="@xml/scene_01"
+            android:id="@+id/motionLayout">
 
-        <FrameLayout
-                android:elevation="4dp"
-                android:background="@drawable/canvas"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="16dp" app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="16dp" android:layout_marginTop="64dp"
-                app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="64dp"
+        <com.example.sergiobelda.photoeditor.editableimageview.EditableImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/myImageView"
+                android:src="@drawable/ic_launcher_background_size"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginTop="8dp"
+                app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/nameTextInputLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp" android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="wrap_content" android:layout_height="wrap_content">
-            <com.example.sergiobelda.photoeditor.editableimageview.EditableImageView
-                    android:scaleType="centerInside"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/myImageView" android:src="@drawable/ic_launcher_background_size"/>
-        </FrameLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                android:visibility="visible"
+                app:layout_constraintTop_toBottomOf="@+id/myImageView" app:layout_constraintVertical_bias="0.100000024">
+            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="200dp"
+                    android:layout_height="match_parent"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"

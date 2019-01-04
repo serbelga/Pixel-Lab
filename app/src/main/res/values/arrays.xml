@@ -2,8 +2,8 @@
 <resources>
     <array name="palette">
         <item>@color/black</item>
-        <item>@color/red</item>
         <item>@color/redDark</item>
+        <item>@color/red</item>
         <item>@color/yellowDark</item>
         <item>@color/yellow</item>
         <item>@color/teal</item>

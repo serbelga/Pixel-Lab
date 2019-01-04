@@ -14,6 +14,8 @@ import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.core.widget.CompoundButtonCompat
 import androidx.fragment.app.Fragment
 import com.example.sergiobelda.photoeditor.R
+import com.thebluealliance.spectrum.SpectrumPalette
+import kotlinx.android.synthetic.main.fragment_tab_paint.*
 
 /**
  * Tab Paint Fragment.
@@ -33,16 +35,23 @@ class TabPaint : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        colorsRadioGroup = view.findViewById(R.id.colorsRadioGroup)
+        //colorsRadioGroup = view.findViewById(R.id.colorsRadioGroup)
         initializeColorsRadioGroup()
     }
 
     private fun initializeColorsRadioGroup() {
-        initializeColors(colorsRadioGroup)
+        palette.setFixedColumnCount(resources.getIntArray(R.array.palette).size)
+        palette.setSelectedColor(Color.BLACK)
+        palette.setOnColorSelectedListener { color ->
+            currentColor = color
+            tabPaintListener.onColorSelected(currentColor)
+        }
+        //initializeColors(colorsRadioGroup)
+        /*
         colorsRadioGroup!!.setOnCheckedChangeListener { group, checkedColor ->
             currentColor = checkedColor
-            tabPaintListener!!.onColorSelected(currentColor)
-        }
+            tabPaintListener.onColorSelected(currentColor)
+        }*/
     }
 
     private fun initializeColors(group: RadioGroup?) {

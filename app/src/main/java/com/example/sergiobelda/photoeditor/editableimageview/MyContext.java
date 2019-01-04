@@ -15,7 +15,7 @@ public class MyContext {
         this.strategyTool = strategyTool;
     }
 
-    public void onTouchEvent(MotionEvent event){
+    public void onTouchEvent(MotionEvent event) {
         strategyTool.onTouchEvent(event);
     }
 }

@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.*;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -54,6 +55,10 @@ public class EditorFragment extends Fragment {
     private TabLayout toolsTabLayout;
     public TabItem tabPaint, tabFigure, tabSticker;
 
+    private MotionLayout motionLayout;
+
+    int paintColor;
+
     int currentColor;
 
     public EditorFragment() {
@@ -78,6 +83,7 @@ public class EditorFragment extends Fragment {
         tabFigure = view.findViewById(R.id.tabFigure);
         tabPaint = view.findViewById(R.id.tabPaint);
         tabSticker = view.findViewById(R.id.tabSticker);
+        motionLayout = view.findViewById(R.id.motionLayout);
         setImage();
         initializeTabLayout();
         initializeViewPager();
@@ -114,6 +120,16 @@ public class EditorFragment extends Fragment {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
                 super.onTabReselected(tab);
+                editableImageView.setEditMode(tab.getPosition());
+                /*
+                if (tab.getPosition() == PAINT) {
+                    editableImageView.setEditMode(PAINT);
+                } else if (tab.getPosition() == FIGURE) {
+                    editableImageView.setEditMode(FIGURE);
+                } else if (tab.getPosition() == STICKER) {
+                    editableImageView.setEditMode(STICKER);
+                }
+                */
             }
         });
     }
@@ -139,6 +155,8 @@ public class EditorFragment extends Fragment {
                     case BottomSheetBehavior.STATE_DRAGGING:
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
+                        int tabPosition = toolsTabLayout.getSelectedTabPosition();
+                        editableImageView.setEditMode(tabPosition);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         break;
@@ -159,11 +177,12 @@ public class EditorFragment extends Fragment {
                 switch (item.getItemId()) {
                     case R.id.tools:
                         toolsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        editableImageView.setEditMode(PAINT);
                         break;
                     case R.id.export:
-                        checkWriteExternalStoragePermission();
+                        //checkWriteExternalStoragePermission();
 
-                        //TODO animation
+                        motionLayout.transitionToEnd();
 
                         break;
                 }
@@ -171,6 +190,8 @@ public class EditorFragment extends Fragment {
             }
         });
     }
+
+
 
     private void checkWriteExternalStoragePermission() {
         if (ContextCompat.checkSelfPermission(getContext(),
@@ -232,7 +253,7 @@ public class EditorFragment extends Fragment {
                 ((TabPaint) fragment).setTabPaintListener(new TabPaint.TabPaintListener() {
                     @Override
                     public void onColorSelected(int currentColor) {
-                        //editableImageView.setImageDrawable(new ColorDrawable(currentColor));
+                        editableImageView.setCurrentColor(currentColor);
                     }
                 });
             } else if (position == FIGURE) {

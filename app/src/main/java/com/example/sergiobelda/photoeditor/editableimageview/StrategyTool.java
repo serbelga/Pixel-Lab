@@ -12,7 +12,7 @@ abstract class StrategyTool {
         this.imageView = imageView;
     }
 
-    void invalidate(){
+    void invalidate() {
         imageView.invalidate();
     }
 
