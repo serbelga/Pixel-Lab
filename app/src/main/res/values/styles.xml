@@ -11,9 +11,18 @@
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/blue</item>
 
+        <!-- SeekBar -->
+        <item name="android:colorControlActivated">@color/black</item>
+        <!-- Back button & SeekBar color -->
+        <item name="android:colorControlNormal">@color/gray</item>
+
         <!-- Status Bar color and windowLightStatusBar true if Status bar is Light and false if it's dark-->
         <item name="android:statusBarColor">@color/whiteDark</item>
         <item name="android:windowLightStatusBar">true</item>
+
+        <item name="textInputStyle">
+            @style/AppTextInputLayout
+        </item>
 
         <item name="bottomNavigationStyle">
             @style/AppBottomNavigation
@@ -52,7 +61,7 @@
         </item>
 
         <item name="floatingActionButtonStyle">
-            @style/MyFloatingActionButton
+            @style/AppFloatingActionButton
         </item>
 
         <item name="shapeAppearanceSmallComponent">@style/SmallComponent</item>
@@ -107,17 +116,37 @@
         <item name="cornerSize">0dp</item>
     </style>
 
-    <style name="MyFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+    <!--
+    <style name="AppFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="shapeAppearanceOverlay">@style/FloatingActionButton</item>
     </style>
 
-    <style name="FloatingActionButton" parent="">
-        <item name="cornerSize">@null</item>
+    <style name="FloatingActionButton">
+        <item name="cornerSize">@null</item> for diamond
+         without <item name="cornerSize">@null</item> and cornerFamily cut and cornerSize 0dp in ShapeSmallMed...Components for square
+    </style>
+    -->
+
+    <style name="AppFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="shapeAppearanceOverlay">@style/FloatingActionButton</item>
+    </style>
+
+    <style name="FloatingActionButton" parent="ShapeAppearanceOverlay.MaterialComponents.FloatingActionButton">
     </style>
 
     <style name="AppButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="strokeColor">@color/black</item>
         <item name="strokeWidth">1dp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="AppTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/black</item>
+        <item name="counterTextColor">@color/black</item>
+    </style>
+
+    <style name="AppAlertDialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:colorPrimary">@color/black</item>
     </style>
 
 </resources>

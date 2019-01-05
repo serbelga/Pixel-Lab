@@ -5,80 +5,72 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
+import com.example.sergiobelda.photoeditor.editableimageview.figures.Circle;
+import com.example.sergiobelda.photoeditor.editableimageview.figures.Line;
+import com.example.sergiobelda.photoeditor.editableimageview.figures.Square;
+import com.example.sergiobelda.photoeditor.editableimageview.paint.Path;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-import static com.example.sergiobelda.photoeditor.editableimageview.Figure.*;
+import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.PAINT;
+import static com.example.sergiobelda.photoeditor.editableimageview.figures.Figure.*;
 import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.FIGURE;
 
-public class EditableImageView extends androidx.appcompat.widget.AppCompatImageView {
+public class EditableImageView extends ImageFilterView {
     private float mScaleFactor = 1.f;
     GestureDetector gestureDetector;
     ScaleGestureDetector mScaleDetector;
-    Random random = new Random();
     Paint paint = new Paint();
     List<Square> squares;
     List<Circle> circles;
+    List<Path> paths;
+    List<Line> lines;
+    Map<Integer, Path> pathMap;
 
-    //Tools
-    private final int LINE_MODE = 2;
+    float mLastTouchx, mLastTouchy;
+
+    float contrast = 1;
+
+    int currentColor = Color.WHITE;
 
     int figureMode = -1;
     int editMode = -1;
 
-    //Paint
-
+    MyContext myContext;
+    private float currentStroke;
+    private final float STROKE_WIDTH = 8;
 
     public EditableImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         squares = new ArrayList<>();
         circles = new ArrayList<>();
+        paths = new ArrayList<>();
+        lines = new ArrayList<>();
+        pathMap = new HashMap<>();
+        currentStroke = STROKE_WIDTH;
+        myContext = new MyContext(this);
         GestureListener gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(getContext(), gestureListener);
+        paint.setStrokeWidth(STROKE_WIDTH);
         mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
-        mScaleDetector.onTouchEvent(event);
-        float xTouch, yTouch;
-        Square s = null;
-        switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_POINTER_DOWN:
-            case MotionEvent.ACTION_DOWN:
-                xTouch = event.getX();
-                yTouch = event.getY();
-                s = getSquare(xTouch, yTouch);
-                if (s != null) {
-                    s.setX(xTouch);
-                    s.setY(yTouch);
-                    Log.d("Square: ", Float.toString(s.getX()) + Float.toString(s.getY()));
-                }
-                invalidate();
+        switch (editMode) {
+            case PAINT :
+                myContext.setStrategyTool(new StrategyPaint());
+                myContext.onTouchEvent(event);
                 break;
-            case MotionEvent.ACTION_MOVE:
-                xTouch = event.getX();
-                yTouch = event.getY();
-                s = getSquare(xTouch, yTouch);
-                if (s != null) {
-                    s.setX(xTouch);
-                    s.setY(yTouch);
-                    Log.d("Square: ", Float.toString(s.getX()) + Float.toString(s.getY()));
-                }
-                invalidate();
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_POINTER_UP:
+            case FIGURE :
+                myContext.setStrategyTool(new StrategyFigure());
+                myContext.onTouchEvent(event);
                 break;
         }
-        invalidate();
         return true;
     }
 
@@ -95,22 +87,30 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
             paint.setColor((int) c.getColor());
             canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), paint);
         }
-        canvas.restore();
-    }
-
-    private Square getSquare(float xTouch, float yTouch) {
-        Square touched = null;
-        for (Square s : squares) {
-            double side = s.getSide();
-            double halfside = s.getSide() / 2;
-            float x = s.getX();
-            float y = s.getY();
-            if (((x - halfside) < xTouch && (x + halfside) > xTouch) &&
-                    ((y + halfside) > yTouch && (y - halfside) < yTouch)) {
-                touched = s;
+        for (Path p : paths) {
+            paint.setColor(p.getColor());
+            paint.setStrokeWidth(p.getStrokeWidth());
+            for (Line l : p.getLines()){
+                canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
             }
+            paint.setStrokeWidth(STROKE_WIDTH);
         }
-        return touched;
+        for (Integer id : pathMap.keySet()) {
+            Path path = pathMap.get(id);
+            paint.setColor(path.getColor());
+            paint.setStrokeWidth(path.getStrokeWidth());
+            for (Line l : path.getLines()){
+                canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
+            }
+            paint.setStrokeWidth(STROKE_WIDTH);
+        }
+        paint.setStrokeWidth(STROKE_WIDTH);
+        for (Line l : lines) {
+            paint.setColor(l.getColor());
+            canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
+        }
+        this.setContrast(contrast);
+        canvas.restore();
     }
 
     public void setFigureMode(int figureMode) {
@@ -121,22 +121,43 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
         this.editMode = editMode;
     }
 
+    public void setCurrentColor(int currentColor) {
+        this.currentColor = currentColor;
+    }
+
+    public void setCurrentStroke(float currentStroke) {
+        this.currentStroke = currentStroke;
+    }
+
     /**
      * Listener of gesture actions
-     * Double tap: figure mode determinate is the figure will be drawn
+     * Double tap: figure mode determinate the figure will be drawn
      */
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+    public class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            distanceY = Math.max(-100, Math.min(100, distanceY));
+            if (e2.getAction() == MotionEvent.ACTION_UP) {
+                return false;
+            }
+            if (distanceY < 10 && distanceY > -10) {
+                contrast = 1;
+            } else {
+                contrast = Math.max(0.2f, Math.min(1.8f, contrast + distanceY / 100));
+            }
+            return true;
+        }
+
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            int color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
             if (editMode == FIGURE) {
                 switch (figureMode) {
                     case SQUARE:
-                        Square s = new Square(e.getX(), e.getY(), 100, color);
+                        Square s = new Square(e.getX(), e.getY(), 100, currentColor);
                         squares.add(s);
                         break;
                     case CIRCLE:
-                        Circle c = new Circle(e.getX(), e.getY(), 50, color);
+                        Circle c = new Circle(e.getX(), e.getY(), 100, currentColor);
                         circles.add(c);
                         break;
                 }
@@ -156,5 +177,34 @@ public class EditableImageView extends androidx.appcompat.widget.AppCompatImageV
             invalidate();
             return true;
         }
+    }
+
+    public Square getTouchedSquare(float xTouch, float yTouch) {
+        Square touched = null;
+        for (Square s : squares) {
+            double side = s.getSide();
+            double halfside = s.getSide() / 2;
+            float x = s.getX();
+            float y = s.getY();
+            if (((x - halfside) < xTouch && (x + halfside) > xTouch) &&
+                    ((y + halfside) > yTouch && (y - halfside) < yTouch)) {
+                touched = s;
+            }
+        }
+        return touched;
+    }
+
+    public void addPath(int id) {
+        pathMap.put(id, new Path(currentColor, currentStroke));
+    }
+
+    public void updateLines(int id, float x, float y){
+        Path path = pathMap.get(id);
+        ArrayList<Line> lines = path.getLines();
+        if (lines.size() > 1) {
+            lines.get(lines.size() - 1).setXf(x);
+            lines.get(lines.size() - 1).setYf(y);
+        }
+        lines.add(new Line(x, y, x, y, Color.BLACK));
     }
 }

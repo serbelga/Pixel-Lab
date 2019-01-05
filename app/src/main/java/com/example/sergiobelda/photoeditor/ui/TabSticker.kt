@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.sergiobelda.photoeditor.R
 
 /**
- * TabSticker Fragment
+ * Tab Sticker Fragment.
  */
 class TabSticker : Fragment() {
     lateinit var tabStickerListener: TabStickerListener
@@ -23,7 +23,7 @@ class TabSticker : Fragment() {
         return inflater.inflate(R.layout.fragment_tab_sticker, container, false)
     }
 
-    public interface TabStickerListener {
+    interface TabStickerListener {
         fun onStickerSelected()
     }
-}// Required empty public constructor
+}
