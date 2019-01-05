@@ -37,12 +37,26 @@ class EditorActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
+        this.title = ""
         editableImageView = myImageView
         setImage()
+        initializePalette()
         initializeTabLayout()
         initializeViewPager()
         initializeBottomSheetBehavior()
         initializeBottomNavigationView()
+    }
+
+    private fun initializePalette() {
+        paletteFab.setOnClickListener {
+            paletteFab.isExpanded = !paletteFab.isExpanded
+        }
+        scrim.setOnClickListener {
+            paletteFab.isExpanded = false
+        }
+        palettePaint.setOnColorSelectedListener { color ->
+            editableImageView.setCurrentColor(color)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -59,6 +73,9 @@ class EditorActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        if (paletteFab.isExpanded) {
+            paletteFab.isExpanded = false
+        }
         val materialAlertDialogBuilder = MaterialAlertDialogBuilder(this, R.style.AppAlertDialog)
         materialAlertDialogBuilder.setMessage(R.string.lose_work)
         materialAlertDialogBuilder.setPositiveButton(R.string.yes) { _, _ ->

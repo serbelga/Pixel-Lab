@@ -6,25 +6,4 @@
              android:padding="8dp"
              tools:context=".ui.TabPaint">
 
-    <HorizontalScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" tools:ignore="UselessParent">
-        <!--
-        <RadioGroup
-                android:id="@+id/colorsRadioGroup"
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-        </RadioGroup>-->
-        <com.thebluealliance.spectrum.SpectrumPalette
-                android:id="@+id/palette"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                app:spectrum_autoPadding="true"
-                app:spectrum_outlineWidth="2dp"
-                app:spectrum_colors="@array/palette" />
-    </HorizontalScrollView>
-
-
 </FrameLayout>

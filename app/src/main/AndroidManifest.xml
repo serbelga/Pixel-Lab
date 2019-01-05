@@ -42,8 +42,6 @@
                     android:resource="@xml/file_paths"/>
         </provider>
 
-        <activity android:name=".MainActivity">
-        </activity>
         <activity android:name=".ui.EditorActivity">
         </activity>
     </application>

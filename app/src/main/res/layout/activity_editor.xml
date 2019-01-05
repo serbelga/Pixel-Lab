@@ -4,7 +4,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".uifragments.EditorFragment">
+        tools:context=".ui.EditorActivity">
 
 
 
@@ -46,11 +46,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+    <View
+            android:visibility="invisible"
+            android:id="@+id/scrim"
+            app:layout_behavior="@string/fab_transformation_scrim_behavior"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
+
+    </View>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/paletteFab"
+            android:layout_gravity="bottom|end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_sharp_palette_24px"
+            android:layout_marginBottom="72dp"
+            android:layout_marginEnd="16dp" app:layout_anchorGravity="top|end"
+            app:layout_anchor="@+id/toolsBottomSheet"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolsBottomSheet"
             style="@style/Widget.MaterialComponents.BottomSheet.Modal"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="200dp"
             android:elevation="16dp"
             app:behavior_hideable="true"
             app:backgroundTint="?attr/colorSecondary"
@@ -101,4 +120,22 @@
                 android:layout_height="wrap_content">
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.transformation.TransformationChildCard
+            android:id="@+id/palette"
+            android:visibility="invisible"
+            app:layout_behavior="@string/fab_transformation_sheet_behavior"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" android:layout_gravity="center">
+
+        <com.thebluealliance.spectrum.SpectrumPalette
+                android:id="@+id/palettePaint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:spectrum_autoPadding="true"
+                app:spectrum_outlineWidth="2dp"
+                app:spectrum_colors="@array/palette"/>
+    </com.google.android.material.transformation.TransformationChildCard>
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

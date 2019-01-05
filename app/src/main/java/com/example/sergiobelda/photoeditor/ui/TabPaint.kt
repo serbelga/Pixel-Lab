@@ -30,23 +30,24 @@ class TabPaint : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeColorPalette()
+        //initializeColorPalette()
     }
 
+    /*
     private fun initializeColorPalette() {
-        palette.setFixedColumnCount(resources.getIntArray(R.array.palette).size)
+        palettePaint.setFixedColumnCount(resources.getIntArray(R.array.palette).size)
         //Select color
         if (currentColor == 0) {
-            palette.setSelectedColor(Color.BLACK)
+            palettePaint.setSelectedColor(Color.BLACK)
         } else {
-            palette.setSelectedColor(currentColor)
+            palettePaint.setSelectedColor(currentColor)
         }
         //On color click
-        palette.setOnColorSelectedListener { color ->
+        palettePaint.setOnColorSelectedListener { color ->
             currentColor = color
             tabPaintListener.onColorSelected(currentColor)
         }
-    }
+    }*/
 
     interface TabPaintListener {
         fun onColorSelected(currentColor: Int)

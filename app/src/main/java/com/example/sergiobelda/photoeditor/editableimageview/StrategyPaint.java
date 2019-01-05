@@ -16,13 +16,13 @@ public class StrategyPaint extends StrategyTool  {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_DOWN:
-                addPath(id);
+                imageView.addPath(id);
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
                 for (int i = 0; i < event.getPointerCount(); i++) {
                     int mId = event.getPointerId(i);
-                    updateLines(mId, event.getX(i), event.getY(i));
+                    imageView.updateLines(mId, event.getX(i), event.getY(i));
                 }
                 invalidate();
                 break;
@@ -33,19 +33,5 @@ public class StrategyPaint extends StrategyTool  {
                 imageView.pathMap.get(id).setLines(new ArrayList<Line>());
                 break;
         }
-    }
-
-    private void addPath(int id) {
-        imageView.pathMap.put(id, new Path(imageView.currentColor));
-    }
-
-    public void updateLines(int id, float x, float y){
-        Path path = imageView.pathMap.get(id);
-        ArrayList<Line> lines = path.getLines();
-        if (lines.size() > 1) {
-            lines.get(lines.size() - 1).setXf(x);
-            lines.get(lines.size() - 1).setYf(y);
-        }
-        lines.add(new Line(x, y, x, y, Color.BLACK));
     }
 }

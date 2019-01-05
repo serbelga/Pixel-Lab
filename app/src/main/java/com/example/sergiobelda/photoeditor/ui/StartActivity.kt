@@ -13,11 +13,9 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.navigation.fragment.NavHostFragment
 import com.example.sergiobelda.photoeditor.R
-import kotlinx.android.synthetic.main.fragment_start.*
+import kotlinx.android.synthetic.main.activity_start.*
 import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 

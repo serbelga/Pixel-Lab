@@ -6,7 +6,6 @@ import java.util.Random;
 
 abstract class StrategyTool {
     EditableImageView imageView;
-    Random random = new Random();
 
     void setImageView(EditableImageView imageView) {
         this.imageView = imageView;

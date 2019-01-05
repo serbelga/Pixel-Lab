@@ -2,6 +2,7 @@ package com.example.sergiobelda.photoeditor.editableimageview;
 
 import android.view.MotionEvent;
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Line;
+import com.example.sergiobelda.photoeditor.editableimageview.figures.Square;
 
 import static com.example.sergiobelda.photoeditor.editableimageview.figures.Figure.LINE;
 
@@ -32,6 +33,36 @@ public class StrategyFigure extends StrategyTool {
                     }
                     break;
                 }
+            }
+        } else {
+            float xTouch, yTouch;
+            Square s;
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    imageView.mLastTouchx = event.getX();
+                    imageView.mLastTouchy = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    xTouch = event.getX();
+                    yTouch = event.getY();
+                    s = imageView.getTouchedSquare(xTouch, yTouch);
+                    if (!imageView.mScaleDetector.isInProgress()) {
+                        if (s != null) {
+                            s.setX(xTouch);
+                            s.setY(yTouch);
+                        }
+                    }
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    xTouch = event.getX();
+                    yTouch = event.getY();
+                    s = imageView.getTouchedSquare(xTouch, yTouch);
+                    if (s != null) {
+                        s.setX(s.getX());
+                        s.setY(s.getY());
+                    }
+                    break;
             }
         }
         invalidate();

@@ -32,6 +32,8 @@ public class EditableImageView extends ImageFilterView {
     List<Line> lines;
     Map<Integer, Path> pathMap;
 
+    float mLastTouchx, mLastTouchy;
+
     float contrast = 1;
 
     int currentColor = Color.BLACK;
@@ -52,7 +54,7 @@ public class EditableImageView extends ImageFilterView {
         GestureListener gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(getContext(), gestureListener);
         paint.setStrokeWidth(8);
-        //mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
+        mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
     @Override
@@ -104,21 +106,6 @@ public class EditableImageView extends ImageFilterView {
         canvas.restore();
     }
 
-    private Square getSquare(float xTouch, float yTouch) {
-        Square touched = null;
-        for (Square s : squares) {
-            double side = s.getSide();
-            double halfside = s.getSide() / 2;
-            float x = s.getX();
-            float y = s.getY();
-            if (((x - halfside) < xTouch && (x + halfside) > xTouch) &&
-                    ((y + halfside) > yTouch && (y - halfside) < yTouch)) {
-                touched = s;
-            }
-        }
-        return touched;
-    }
-
     public void setFigureMode(int figureMode) {
         this.figureMode = figureMode;
     }
@@ -135,7 +122,7 @@ public class EditableImageView extends ImageFilterView {
      * Listener of gesture actions
      * Double tap: figure mode determinate the figure will be drawn
      */
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+    public class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             distanceY = Math.max(-100, Math.min(100, distanceY));
@@ -159,7 +146,7 @@ public class EditableImageView extends ImageFilterView {
                         squares.add(s);
                         break;
                     case CIRCLE:
-                        Circle c = new Circle(e.getX(), e.getY(), 50, currentColor);
+                        Circle c = new Circle(e.getX(), e.getY(), 100, currentColor);
                         circles.add(c);
                         break;
                 }
@@ -179,5 +166,34 @@ public class EditableImageView extends ImageFilterView {
             invalidate();
             return true;
         }
+    }
+
+    public Square getTouchedSquare(float xTouch, float yTouch) {
+        Square touched = null;
+        for (Square s : squares) {
+            double side = s.getSide();
+            double halfside = s.getSide() / 2;
+            float x = s.getX();
+            float y = s.getY();
+            if (((x - halfside) < xTouch && (x + halfside) > xTouch) &&
+                    ((y + halfside) > yTouch && (y - halfside) < yTouch)) {
+                touched = s;
+            }
+        }
+        return touched;
+    }
+
+    public void addPath(int id) {
+        pathMap.put(id, new Path(currentColor));
+    }
+
+    public void updateLines(int id, float x, float y){
+        Path path = pathMap.get(id);
+        ArrayList<Line> lines = path.getLines();
+        if (lines.size() > 1) {
+            lines.get(lines.size() - 1).setXf(x);
+            lines.get(lines.size() - 1).setYf(y);
+        }
+        lines.add(new Line(x, y, x, y, Color.BLACK));
     }
 }

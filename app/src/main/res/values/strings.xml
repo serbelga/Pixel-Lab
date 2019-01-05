@@ -6,4 +6,8 @@
     <string name="lose_work">Va a perder su trabajo. Desea continuar?</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
+    <string name="undo">Deshacer</string>
+    <string name="redo">Rehacer</string>
+    <string name="tools">Herramientas</string>
+    <string name="export">Exportar</string>
 </resources>
