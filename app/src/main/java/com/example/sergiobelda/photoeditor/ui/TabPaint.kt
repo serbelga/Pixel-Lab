@@ -1,7 +1,6 @@
 package com.example.sergiobelda.photoeditor.ui
 
 
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,12 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 
 import android.widget.RadioGroup
-import androidx.annotation.ColorInt
-import androidx.appcompat.widget.AppCompatRadioButton
-import androidx.core.widget.CompoundButtonCompat
 import androidx.fragment.app.Fragment
 import com.example.sergiobelda.photoeditor.R
-import com.thebluealliance.spectrum.SpectrumPalette
 import kotlinx.android.synthetic.main.fragment_tab_paint.*
 
 /**
@@ -35,45 +30,22 @@ class TabPaint : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //colorsRadioGroup = view.findViewById(R.id.colorsRadioGroup)
-        initializeColorsRadioGroup()
+        initializeColorPalette()
     }
 
-    private fun initializeColorsRadioGroup() {
+    private fun initializeColorPalette() {
         palette.setFixedColumnCount(resources.getIntArray(R.array.palette).size)
-        palette.setSelectedColor(Color.BLACK)
+        //Select color
+        if (currentColor == 0) {
+            palette.setSelectedColor(Color.BLACK)
+        } else {
+            palette.setSelectedColor(currentColor)
+        }
+        //On color click
         palette.setOnColorSelectedListener { color ->
             currentColor = color
             tabPaintListener.onColorSelected(currentColor)
         }
-        //initializeColors(colorsRadioGroup)
-        /*
-        colorsRadioGroup!!.setOnCheckedChangeListener { group, checkedColor ->
-            currentColor = checkedColor
-            tabPaintListener.onColorSelected(currentColor)
-        }*/
-    }
-
-    private fun initializeColors(group: RadioGroup?) {
-        val colorsArray = resources.getIntArray(R.array.palette)
-        for (i in colorsArray.indices) {
-            val button = AppCompatRadioButton(context!!)
-            CompoundButtonCompat.setButtonTintList(
-                button, ColorStateList.valueOf(convertToDisplay(colorsArray[i]))
-            )
-            button.id = colorsArray[i]
-            group!!.addView(button)
-        }
-    }
-
-    /**
-     *
-     * @param color
-     * @return
-     */
-    @ColorInt
-    private fun convertToDisplay(@ColorInt color: Int): Int {
-        return if (color == Color.WHITE) Color.BLACK else color
     }
 
     interface TabPaintListener {

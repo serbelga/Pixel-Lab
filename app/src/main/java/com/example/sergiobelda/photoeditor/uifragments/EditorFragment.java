@@ -1,4 +1,4 @@
-package com.example.sergiobelda.photoeditor.ui;
+package com.example.sergiobelda.photoeditor.uifragments;
 
 
 import android.Manifest;
@@ -27,6 +27,9 @@ import androidx.viewpager.widget.ViewPager;
 import com.bumptech.glide.Glide;
 import com.example.sergiobelda.photoeditor.R;
 import com.example.sergiobelda.photoeditor.editableimageview.EditableImageView;
+import com.example.sergiobelda.photoeditor.ui.TabFigure;
+import com.example.sergiobelda.photoeditor.ui.TabPaint;
+import com.example.sergiobelda.photoeditor.ui.TabSticker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabItem;

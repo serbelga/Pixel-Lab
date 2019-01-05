@@ -32,6 +32,8 @@ public class EditableImageView extends ImageFilterView {
     List<Line> lines;
     Map<Integer, Path> pathMap;
 
+    float contrast = 1;
+
     int currentColor = Color.BLACK;
 
     int figureMode = -1;
@@ -98,6 +100,7 @@ public class EditableImageView extends ImageFilterView {
             paint.setColor(l.getColor());
             canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
         }
+        this.setContrast(contrast);
         canvas.restore();
     }
 
@@ -133,6 +136,20 @@ public class EditableImageView extends ImageFilterView {
      * Double tap: figure mode determinate the figure will be drawn
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            distanceY = Math.max(-100, Math.min(100, distanceY));
+            if (e2.getAction() == MotionEvent.ACTION_UP) {
+                return false;
+            }
+            if (distanceY < 10 && distanceY > -10) {
+                contrast = 1;
+            } else {
+                contrast = Math.max(0.2f, Math.min(1.8f, contrast + distanceY / 100));
+            }
+            return true;
+        }
+
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             if (editMode == FIGURE) {

@@ -1,23 +1,19 @@
 package com.example.sergiobelda.photoeditor.ui
 
-
 import android.Manifest
-import android.app.Activity.RESULT_OK
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.sergiobelda.photoeditor.R
 import kotlinx.android.synthetic.main.fragment_start.*
 import java.io.File
@@ -25,50 +21,29 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Start Fragment.
- */
-class StartFragment : Fragment() {
+class StartActivity : AppCompatActivity() {
     private val CAMERA_REQUEST_CODE = 0
     private val GALLERY_REQUEST_CODE = 1
     val PERMISSIONS_REQUEST_CAMERA = 99
     lateinit var photoUri : Uri
-    
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_start, container, false)
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_start)
         cameraButton.setOnClickListener {
             checkCameraPermission()
         }
         galleryButton.setOnClickListener {
-            var pickPhoto = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            var pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(pickPhoto, GALLERY_REQUEST_CODE)
         }
     }
 
     private fun checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(
-                context!!,
-                Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            /*
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!,
-                    Manifest.permission.CAMERA)) {
-                Log.d("Atencion", "Debes aceptar los permisos de la camara")
-            } else {
-                ActivityCompat.requestPermissions(activity!!,
-                    arrayOf(Manifest.permission.CAMERA),
-                    PERMISSIONS_REQUEST_CAMERA)
-            }*/
-            requestPermissions(
+                this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
                 arrayOf(Manifest.permission.CAMERA),
                 PERMISSIONS_REQUEST_CAMERA)
         } else {
@@ -87,16 +62,16 @@ class StartFragment : Fragment() {
 
     private fun startCameraActivity() {
         var takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (takePicture.resolveActivity(activity!!.packageManager) != null) {
+        if (takePicture.resolveActivity(this.packageManager) != null) {
             try {
                 val photoFile = createPhotoFile()
                 if (photoFile != null) {
-                    photoUri = FileProvider.getUriForFile(context!!, "com.example.sergiobelda.photoeditor", photoFile)
+                    photoUri = FileProvider.getUriForFile(this, "com.example.sergiobelda.photoeditor", photoFile)
                     takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                     startActivityForResult(takePicture, CAMERA_REQUEST_CODE)
                 }
-            } catch (e : IOException) {
-                Log.e("IOException", e.message)
+            } catch (e : Throwable) {
+                Log.e("Throwable", e.message)
             }
         }
     }
@@ -104,23 +79,27 @@ class StartFragment : Fragment() {
     private fun createPhotoFile(): File? {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val photoFileName = "IMG_" + timestamp + "_"
-        val storageDir = activity!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val storageDir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(photoFileName, ".jpg", storageDir)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, image: Intent?) {
         super.onActivityResult(requestCode, resultCode, image)
         when (requestCode) {
-            CAMERA_REQUEST_CODE -> if (resultCode == RESULT_OK) {
-                val bundle = Bundle()
-                bundle.putString("image", photoUri.toString())
-                findNavController(this).navigate(R.id.editorAction, bundle)
+            CAMERA_REQUEST_CODE -> if (resultCode == Activity.RESULT_OK) {
+                //val bundle = Bundle()
+                //bundle.putString("image", photoUri.toString())
+                intent = Intent(this, EditorActivity::class.java)
+                intent.putExtra("image", photoUri.toString())
+                startActivity(intent)
+                //NavHostFragment.findNavController(this).navigate(R.id.editorAction, bundle)
             }
-            GALLERY_REQUEST_CODE -> if (resultCode == RESULT_OK) {
+            GALLERY_REQUEST_CODE -> if (resultCode == Activity.RESULT_OK) {
                 val selectedImage = image!!.data
-                val bundle = Bundle()
-                bundle.putString("image", selectedImage.toString())
-                findNavController(this).navigate(R.id.editorAction, bundle)
+                intent = Intent(this, EditorActivity::class.java)
+                intent.putExtra("image", selectedImage!!.toString())
+                startActivity(intent)
+                //NavHostFragment.findNavController(this).navigate(R.id.editorAction, bundle)
             }
         }
     }
