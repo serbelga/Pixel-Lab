@@ -28,9 +28,10 @@ public class StrategyPaint extends StrategyTool  {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-                Path p = new Path(imageView.pathMap.get(id).getLines(), imageView.pathMap.get(id).getColor());
+                Path p = new Path(imageView.pathMap.get(id).getLines(), imageView.pathMap.get(id).getColor(), imageView.pathMap.get(id).getStrokeWidth());
                 imageView.paths.add(p);
                 imageView.pathMap.get(id).setLines(new ArrayList<Line>());
+                imageView.pathMap.get(id).setStrokeWidth(8);
                 break;
         }
     }

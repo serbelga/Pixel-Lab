@@ -3,6 +3,7 @@ package com.example.sergiobelda.photoeditor.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -48,6 +49,7 @@ class EditorActivity : AppCompatActivity() {
     }
 
     private fun initializePalette() {
+        palettePaint.setSelectedColor(Color.WHITE)
         paletteFab.setOnClickListener {
             paletteFab.isExpanded = !paletteFab.isExpanded
         }
@@ -199,8 +201,8 @@ class EditorActivity : AppCompatActivity() {
             if (position == PAINT) {
                 fragment = TabPaint()
                 fragment.tabPaintListener = object : TabPaint.TabPaintListener {
-                    override fun onColorSelected(currentColor: Int) {
-                        editableImageView.setCurrentColor(currentColor)
+                    override fun onStrokeChanged(currentStroke: Float) {
+                        editableImageView.setCurrentStroke(currentStroke)
                     }
                 }
             } else if (position == FIGURE) {

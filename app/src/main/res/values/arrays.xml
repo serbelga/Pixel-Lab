@@ -4,11 +4,16 @@
         <item>@color/white</item>
         <item>@color/whiteDark</item>
         <item>@color/black</item>
+        <item>@color/gray</item>
         <item>@color/redDark</item>
         <item>@color/red</item>
+        <item>@color/orangeDark</item>
+        <item>@color/orange</item>
         <item>@color/yellowDark</item>
         <item>@color/yellow</item>
+        <item>@color/tealDark</item>
         <item>@color/teal</item>
+        <item>@color/blueDark</item>
         <item>@color/blue</item>
         <item>@color/purpleDark</item>
         <item>@color/purple</item>

@@ -24,7 +24,6 @@ public class EditableImageView extends ImageFilterView {
     private float mScaleFactor = 1.f;
     GestureDetector gestureDetector;
     ScaleGestureDetector mScaleDetector;
-    Random random = new Random();
     Paint paint = new Paint();
     List<Square> squares;
     List<Circle> circles;
@@ -36,12 +35,14 @@ public class EditableImageView extends ImageFilterView {
 
     float contrast = 1;
 
-    int currentColor = Color.BLACK;
+    int currentColor = Color.WHITE;
 
     int figureMode = -1;
     int editMode = -1;
 
     MyContext myContext;
+    private float currentStroke;
+    private final float STROKE_WIDTH = 8;
 
     public EditableImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -50,10 +51,11 @@ public class EditableImageView extends ImageFilterView {
         paths = new ArrayList<>();
         lines = new ArrayList<>();
         pathMap = new HashMap<>();
+        currentStroke = STROKE_WIDTH;
         myContext = new MyContext(this);
         GestureListener gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(getContext(), gestureListener);
-        paint.setStrokeWidth(8);
+        paint.setStrokeWidth(STROKE_WIDTH);
         mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
@@ -87,17 +89,22 @@ public class EditableImageView extends ImageFilterView {
         }
         for (Path p : paths) {
             paint.setColor(p.getColor());
+            paint.setStrokeWidth(p.getStrokeWidth());
             for (Line l : p.getLines()){
                 canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
             }
+            paint.setStrokeWidth(STROKE_WIDTH);
         }
         for (Integer id : pathMap.keySet()) {
             Path path = pathMap.get(id);
             paint.setColor(path.getColor());
+            paint.setStrokeWidth(path.getStrokeWidth());
             for (Line l : path.getLines()){
                 canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
             }
+            paint.setStrokeWidth(STROKE_WIDTH);
         }
+        paint.setStrokeWidth(STROKE_WIDTH);
         for (Line l : lines) {
             paint.setColor(l.getColor());
             canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
@@ -116,6 +123,10 @@ public class EditableImageView extends ImageFilterView {
 
     public void setCurrentColor(int currentColor) {
         this.currentColor = currentColor;
+    }
+
+    public void setCurrentStroke(float currentStroke) {
+        this.currentStroke = currentStroke;
     }
 
     /**
@@ -184,7 +195,7 @@ public class EditableImageView extends ImageFilterView {
     }
 
     public void addPath(int id) {
-        pathMap.put(id, new Path(currentColor));
+        pathMap.put(id, new Path(currentColor, currentStroke));
     }
 
     public void updateLines(int id, float x, float y){
