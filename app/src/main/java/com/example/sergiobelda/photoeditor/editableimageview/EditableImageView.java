@@ -136,6 +136,7 @@ public class EditableImageView extends ImageFilterView {
     public class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            /*
             distanceY = Math.max(-100, Math.min(100, distanceY));
             if (e2.getAction() == MotionEvent.ACTION_UP) {
                 return false;
@@ -144,7 +145,7 @@ public class EditableImageView extends ImageFilterView {
                 contrast = 1;
             } else {
                 contrast = Math.max(0.2f, Math.min(1.8f, contrast + distanceY / 100));
-            }
+            }*/
             return true;
         }
 
@@ -168,12 +169,18 @@ public class EditableImageView extends ImageFilterView {
 
     private class ScaleListener
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        public Square s;
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
+            s = getTouchedSquare(detector.getFocusX(), detector.getFocusY());
             mScaleFactor *= detector.getScaleFactor();
-
-            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
-
+            mScaleFactor = Math.max(0.85f, Math.min(2.5f, mScaleFactor));
+            if (s != null) {
+                float side = (float) s.getSide();
+                side *= mScaleFactor;
+                side = Math.max(150, Math.min(300, side));
+                s.setSide(side);
+            }
             invalidate();
             return true;
         }

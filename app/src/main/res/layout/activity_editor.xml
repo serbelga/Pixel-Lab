@@ -4,11 +4,25 @@
         xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/parentLayout"
         tools:context=".ui.EditorActivity">
 
-
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nameTextInputLayout"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="top|center"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/saveTextInputEdit"
+                android:hint="Nombre"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.constraintlayout.motion.widget.MotionLayout
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutDescription="@xml/scene_01"
@@ -18,25 +32,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/myImageView"
-                android:src="@drawable/ic_launcher_background_size"
-                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                android:src="@drawable/ic_launcher_background"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
+                app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="16dp"
+                app:layout_constraintVertical_bias="0.0"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/nameTextInputLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="8dp" android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:visibility="visible"
-                app:layout_constraintTop_toBottomOf="@+id/myImageView" app:layout_constraintVertical_bias="0.100000024">
-            <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"/>
-        </com.google.android.material.textfield.TextInputLayout>
+
     </androidx.constraintlayout.motion.widget.MotionLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -65,6 +68,19 @@
             app:fabSize="mini"
             android:layout_marginEnd="16dp" app:layout_anchorGravity="top|end"
             app:layout_anchor="@+id/toolsBottomSheet"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/saveFab"
+            android:layout_gravity="bottom|end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:src="@drawable/ic_sharp_save_24px"
+            android:layout_marginBottom="36dp"
+            app:fabSize="auto"
+            android:layout_marginEnd="16dp"/>
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolsBottomSheet"

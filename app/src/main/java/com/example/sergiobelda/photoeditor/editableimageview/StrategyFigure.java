@@ -12,6 +12,7 @@ public class StrategyFigure extends StrategyTool {
     @Override
     public void onTouchEvent(MotionEvent event) {
         imageView.gestureDetector.onTouchEvent(event);
+
         if (imageView.figureMode == LINE) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN : {
@@ -37,6 +38,7 @@ public class StrategyFigure extends StrategyTool {
         } else {
             float xTouch, yTouch;
             Square s;
+            //imageView.mScaleDetector.onTouchEvent(event);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     imageView.mLastTouchx = event.getX();
