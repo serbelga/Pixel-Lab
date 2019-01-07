@@ -31,6 +31,7 @@
         <com.example.sergiobelda.photoeditor.editableimageview.EditableImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="centerInside"
                 android:id="@+id/myImageView"
                 android:src="@drawable/ic_launcher_background"
                 app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"

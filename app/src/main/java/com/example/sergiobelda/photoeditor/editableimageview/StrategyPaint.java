@@ -1,6 +1,5 @@
 package com.example.sergiobelda.photoeditor.editableimageview;
 
-import android.graphics.Color;
 import android.view.MotionEvent;
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Line;
 import com.example.sergiobelda.photoeditor.editableimageview.paint.Path;

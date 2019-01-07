@@ -11,6 +11,7 @@ import android.view.ScaleGestureDetector;
 import androidx.constraintlayout.utils.widget.ImageFilterView;
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Circle;
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Line;
+import com.example.sergiobelda.photoeditor.editableimageview.figures.Polygon;
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Square;
 import com.example.sergiobelda.photoeditor.editableimageview.paint.Path;
 
@@ -23,15 +24,15 @@ import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.F
 public class EditableImageView extends ImageFilterView {
     private float mScaleFactor = 1.f;
     GestureDetector gestureDetector;
-    ScaleGestureDetector mScaleDetector;
+    ScaleGestureDetector scaleDetector;
     Paint paint = new Paint();
-    List<Square> squares;
-    List<Circle> circles;
+    List<Polygon> polygons;
     List<Path> paths;
     List<Line> lines;
     Map<Integer, Path> pathMap;
 
-    float mLastTouchx, mLastTouchy;
+    Stack<EditableImageViewProxy> stateStack;
+    Stack<List<Polygon>> statePolygon;
 
     float contrast = 1;
 
@@ -46,31 +47,37 @@ public class EditableImageView extends ImageFilterView {
 
     public EditableImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        squares = new ArrayList<>();
-        circles = new ArrayList<>();
         paths = new ArrayList<>();
         lines = new ArrayList<>();
+        polygons = new ArrayList<>();
         pathMap = new HashMap<>();
+        stateStack = new Stack<>();
+        statePolygon = new Stack<>();
         currentStroke = STROKE_WIDTH;
         myContext = new MyContext(this);
         GestureListener gestureListener = new GestureListener();
         gestureDetector = new GestureDetector(getContext(), gestureListener);
         paint.setStrokeWidth(STROKE_WIDTH);
-        mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
+        scaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        scaleDetector.onTouchEvent(event);
         switch (editMode) {
             case PAINT :
                 myContext.setStrategyTool(new StrategyPaint());
                 myContext.onTouchEvent(event);
                 break;
             case FIGURE :
-                myContext.setStrategyTool(new StrategyFigure());
-                myContext.onTouchEvent(event);
+                if (figureMode == LINE) {
+                    myContext.setStrategyTool(new StrategyLine());
+                    myContext.onTouchEvent(event);
+                }
                 break;
         }
+        invalidate();
         return true;
     }
 
@@ -78,14 +85,13 @@ public class EditableImageView extends ImageFilterView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.save();
-        canvas.scale(mScaleFactor, mScaleFactor);
-        for (Square s : squares) {
-            paint.setColor((int) s.getColor());
-            canvas.drawRect((float) (s.getX() - s.getSide()), (float) (s.getY() - s.getSide()), (float) (s.getX() + s.getSide()), (float) (s.getY() + s.getSide()), paint);
-        }
-        for (Circle c : circles) {
-            paint.setColor((int) c.getColor());
-            canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), paint);
+        for (Polygon p : polygons) {
+            paint.setColor((int) p.getColor());
+            if (p instanceof Circle) {
+                canvas.drawCircle(p.getX(), p.getY(), p.getSize(), paint);
+            } else if (p instanceof Square) {
+                canvas.drawRect(p.getX() - p.getSize(), p.getY() - p.getSize(), p.getX() + p.getSize(), p.getY() + p.getSize(), paint);
+            }
         }
         for (Path p : paths) {
             paint.setColor(p.getColor());
@@ -109,7 +115,8 @@ public class EditableImageView extends ImageFilterView {
             paint.setColor(l.getColor());
             canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
         }
-        this.setContrast(contrast);
+
+        //this.setContrast(contrast);
         canvas.restore();
     }
 
@@ -134,10 +141,24 @@ public class EditableImageView extends ImageFilterView {
      * Double tap: figure mode determinate the figure will be drawn
      */
     public class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        Polygon p;
+        @Override
+        public boolean onDown(MotionEvent e) {
+            p = getTouchedPolygon(e.getX(), e.getY());
+            return true;
+        }
+
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            if (p != null && figureMode != LINE) {
+                p.setX(e2.getX());
+                p.setY(e2.getY());
+                //newState();
+            }
             /*
             distanceY = Math.max(-100, Math.min(100, distanceY));
+            Log.d("Distancia", String.valueOf(distanceY));
+            Log.d("Distancia", String.valueOf(distanceX));
             if (e2.getAction() == MotionEvent.ACTION_UP) {
                 return false;
             }
@@ -154,12 +175,14 @@ public class EditableImageView extends ImageFilterView {
             if (editMode == FIGURE) {
                 switch (figureMode) {
                     case SQUARE:
-                        Square s = new Square(e.getX(), e.getY(), 100, currentColor);
-                        squares.add(s);
+                        Polygon s = new Square(e.getX(), e.getY(), 100, currentColor);
+                        polygons.add(s);
+                        //newState();
                         break;
                     case CIRCLE:
-                        Circle c = new Circle(e.getX(), e.getY(), 100, currentColor);
-                        circles.add(c);
+                        Polygon c = new Circle(e.getX(), e.getY(), 100, currentColor);
+                        polygons.add(c);
+                        //newState();
                         break;
                 }
             }
@@ -167,35 +190,40 @@ public class EditableImageView extends ImageFilterView {
         }
     }
 
+    private void newState() {
+        List<Polygon> polygons;
+        polygons = this.polygons;
+        statePolygon.push(polygons);
+    }
+
     private class ScaleListener
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         public Square s;
+        public Circle c;
+        public Polygon p;
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            s = getTouchedSquare(detector.getFocusX(), detector.getFocusY());
+            p = getTouchedPolygon(detector.getFocusX(), detector.getFocusY());
             mScaleFactor *= detector.getScaleFactor();
-            mScaleFactor = Math.max(0.85f, Math.min(2.5f, mScaleFactor));
-            if (s != null) {
-                float side = (float) s.getSide();
-                side *= mScaleFactor;
-                side = Math.max(150, Math.min(300, side));
-                s.setSide(side);
+            mScaleFactor = Math.max(85f, Math.min(250f, mScaleFactor));
+            if (p != null) {
+                p.setSize(mScaleFactor);
             }
+            //newState();
             invalidate();
             return true;
         }
     }
 
-    public Square getTouchedSquare(float xTouch, float yTouch) {
-        Square touched = null;
-        for (Square s : squares) {
-            double side = s.getSide();
-            double halfside = s.getSide() / 2;
-            float x = s.getX();
-            float y = s.getY();
-            if (((x - halfside) < xTouch && (x + halfside) > xTouch) &&
-                    ((y + halfside) > yTouch && (y - halfside) < yTouch)) {
-                touched = s;
+    public Polygon getTouchedPolygon(float xTouch, float yTouch) {
+        Polygon touched = null;
+        for (Polygon p : polygons) {
+            double size = p.getSize();
+            float x = p.getX();
+            float y = p.getY();
+            if (((x - size) < xTouch && (x + size) > xTouch) &&
+                    ((y + size) > yTouch && (y - size) < yTouch)) {
+                touched = p;
             }
         }
         return touched;

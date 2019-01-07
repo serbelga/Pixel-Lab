@@ -180,16 +180,20 @@ class EditorActivity : AppCompatActivity() {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream)
             ostream.flush()
             ostream.close()
-            //showSnackbar()
+            showSnackbar("Se ha guardado correctamente")
         } catch (e: Exception) {
+            showSnackbar(e.message!!)
             e.printStackTrace()
         }
         editableImageView.isDrawingCacheEnabled = false
-        exitSaveMode()
     }
 
-    private fun showSnackbar(){
-        Snackbar.make(parentLayout, "Se ha guardado correctamente", Snackbar.LENGTH_LONG).show();
+    private fun showSnackbar(message : String){
+        Snackbar.make(parentLayout, message, Snackbar.LENGTH_LONG).addCallback(object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                exitSaveMode()
+            }
+        }).show()
     }
 
     private fun initializeBottomSheetBehavior() {
