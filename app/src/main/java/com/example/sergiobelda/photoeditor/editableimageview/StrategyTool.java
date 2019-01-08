@@ -2,8 +2,6 @@ package com.example.sergiobelda.photoeditor.editableimageview;
 
 import android.view.MotionEvent;
 
-import java.util.Random;
-
 abstract class StrategyTool {
     EditableImageView imageView;
 

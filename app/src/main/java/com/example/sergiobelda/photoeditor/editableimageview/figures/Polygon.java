@@ -1,21 +1,18 @@
 package com.example.sergiobelda.photoeditor.editableimageview.figures;
 
-public abstract class Polygon {
-    private float x, y;
+public interface Polygon {
 
-    public float getX() {
-        return x;
-    }
+    float getX();
 
-    public void setX(float x) {
-        this.x = x;
-    }
+    void setX(float x);
 
-    public float getY() {
-        return y;
-    }
+    float getY();
 
-    public void setY(float y) {
-        this.y = y;
-    }
+    void setY(float y);
+
+    float getColor();
+
+    float getSize();
+
+    void setSize(float size);
 }

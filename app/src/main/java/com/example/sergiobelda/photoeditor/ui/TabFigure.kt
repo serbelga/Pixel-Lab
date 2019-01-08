@@ -10,6 +10,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.example.sergiobelda.photoeditor.R
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Figure.*
+import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.fragment_tab_figure.*
 import kotlinx.android.synthetic.main.fragment_tab_paint.*
 
@@ -31,27 +32,29 @@ class TabFigure : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        circlesButton!!.setOnClickListener { tabFigureListener.onFigureSelected(CIRCLE) }
-        squaresButton!!.setOnClickListener { tabFigureListener.onFigureSelected(SQUARE) }
-        linesButton!!.setOnClickListener { tabFigureListener.onFigureSelected(LINE) }
-        //initializeColorPalette()
+        tabFigureListener.onFigureSelected(0)
+        //circlesButton!!.setOnClickListener { tabFigureListener.onFigureSelected(CIRCLE) }
+        //squaresButton!!.setOnClickListener { tabFigureListener.onFigureSelected(SQUARE) }
+        //linesButton!!.setOnClickListener { tabFigureListener.onFigureSelected(LINE) }
+        initializeFigureTabLayout()
     }
 
-    /*
-    private fun initializeColorPalette() {
-        paletteFigure.setFixedColumnCount(resources.getIntArray(R.array.palette).size)
-        //Select color
-        if (currentColor == 0) {
-            paletteFigure.setSelectedColor(Color.BLACK)
-        } else {
-            paletteFigure.setSelectedColor(currentColor)
-        }
-        //On color click
-        paletteFigure.setOnColorSelectedListener { color ->
-            currentColor = color
-            tabPaintListener.onColorSelected(currentColor)
-        }
-    }*/
+    private fun initializeFigureTabLayout() {
+        figureTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tabFigureListener.onFigureSelected(tab!!.position)
+            }
+
+        })
+    }
 
     interface TabFigureListener {
         fun onFigureSelected(currentFigure: Int)

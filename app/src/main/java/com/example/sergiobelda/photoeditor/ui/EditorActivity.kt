@@ -1,9 +1,11 @@
 package com.example.sergiobelda.photoeditor.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +23,8 @@ import com.example.sergiobelda.photoeditor.editableimageview.EditableImageView
 import com.example.sergiobelda.photoeditor.editableimageview.EditorTool.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_editor.*
 import java.io.File
@@ -42,10 +46,17 @@ class EditorActivity : AppCompatActivity() {
         editableImageView = myImageView
         setImage()
         initializePalette()
+        initializeSave()
         initializeTabLayout()
         initializeViewPager()
         initializeBottomSheetBehavior()
         initializeBottomNavigationView()
+    }
+
+    private fun initializeSave() {
+        saveFab.setOnClickListener {
+            saveImage()
+        }
     }
 
     private fun initializePalette() {
@@ -78,16 +89,22 @@ class EditorActivity : AppCompatActivity() {
         if (paletteFab.isExpanded) {
             paletteFab.isExpanded = false
         }
-        val materialAlertDialogBuilder = MaterialAlertDialogBuilder(this, R.style.AppAlertDialog)
-        materialAlertDialogBuilder.setMessage(R.string.lose_work)
-        materialAlertDialogBuilder.setPositiveButton(R.string.yes) { _, _ ->
-            super.onBackPressed()
+        if (toolsBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+            toolsBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        } else if (saveMode) {
+            exitSaveMode()
+        } else {
+            val materialAlertDialogBuilder = MaterialAlertDialogBuilder(this, R.style.AppAlertDialog)
+            materialAlertDialogBuilder.setMessage(R.string.lose_work)
+            materialAlertDialogBuilder.setPositiveButton(R.string.yes) { _, _ ->
+                super.onBackPressed()
+            }
+            materialAlertDialogBuilder.setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.dismiss()
+            }
+            val materialAlertDialog = materialAlertDialogBuilder.create()
+            materialAlertDialog.show()
         }
-        materialAlertDialogBuilder.setNegativeButton(R.string.no) { dialog, _ ->
-            dialog.dismiss()
-        }
-        val materialAlertDialog = materialAlertDialogBuilder.create()
-        materialAlertDialog.show()
     }
 
     private fun initializeBottomNavigationView() {
@@ -98,12 +115,35 @@ class EditorActivity : AppCompatActivity() {
                     myImageView.setEditMode(PAINT)
                 }
                 R.id.export -> {
-                    //motionLayout.transitionToEnd()
-                    checkWriteExternalStoragePermission()
+                    enterSaveMode()
                 }
             }
             true
         }
+    }
+
+    private var saveMode = false
+
+    private fun enterSaveMode() {
+        bottom_navigation.visibility = View.GONE
+        paletteFab.visibility = View.GONE
+        saveFab.visibility = View.VISIBLE
+        toolbar.visibility = View.GONE
+        nameTextInputLayout.visibility = View.VISIBLE
+        toolsBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        editableImageView.setEditMode(-1)
+        motionLayout.transitionToEnd()
+        saveMode = true
+    }
+
+    private fun exitSaveMode() {
+        bottom_navigation.visibility = View.VISIBLE
+        paletteFab.visibility = View.VISIBLE
+        saveFab.visibility = View.GONE
+        toolbar.visibility = View.VISIBLE
+        nameTextInputLayout.visibility = View.GONE
+        motionLayout.transitionToStart()
+        saveMode = false
     }
 
     private fun checkWriteExternalStoragePermission() {
@@ -128,17 +168,32 @@ class EditorActivity : AppCompatActivity() {
         val root = Environment.getExternalStorageDirectory()
         val rnd = Random()
         val i = rnd.nextInt(1000)
-        val cachePath = File(root.absolutePath + "/DCIM/Camera/image_" + i.toString() + ".jpg")
+        val cachePath : File
+        cachePath = if (!saveTextInputEdit.text!!.equals("")) {
+            File(root.absolutePath + "/DCIM/Camera/" + saveTextInputEdit.text + ".jpg")
+        } else {
+            File(root.absolutePath + "/DCIM/Camera/image_" + i.toString() + ".jpg")
+        }
         try {
             cachePath.createNewFile()
             val ostream = FileOutputStream(cachePath)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream)
             ostream.flush()
             ostream.close()
+            showSnackbar("Se ha guardado correctamente")
         } catch (e: Exception) {
+            showSnackbar(e.message!!)
             e.printStackTrace()
         }
         editableImageView.isDrawingCacheEnabled = false
+    }
+
+    private fun showSnackbar(message : String){
+        Snackbar.make(parentLayout, message, Snackbar.LENGTH_LONG).addCallback(object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                exitSaveMode()
+            }
+        }).show()
     }
 
     private fun initializeBottomSheetBehavior() {

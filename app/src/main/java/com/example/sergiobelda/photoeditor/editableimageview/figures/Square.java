@@ -1,6 +1,6 @@
 package com.example.sergiobelda.photoeditor.editableimageview.figures;
 
-public class Square {
+public class Square implements Polygon {
     private float x, y;
     private double side;
     private float color;
@@ -12,18 +12,22 @@ public class Square {
         this.color = color;
     }
 
+    @Override
     public float getX() {
         return x;
     }
 
+    @Override
     public void setX(float x) {
         this.x = x;
     }
 
+    @Override
     public float getY() {
         return y;
     }
 
+    @Override
     public void setY(float y) {
         this.y = y;
     }
@@ -42,5 +46,14 @@ public class Square {
 
     public void setColor(float color) {
         this.color = color;
+    }
+
+    public float getSize(){
+        return (float) getSide();
+    }
+
+    @Override
+    public void setSize(float size) {
+        this.setSide(size);
     }
 }

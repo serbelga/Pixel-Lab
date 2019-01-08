@@ -5,29 +5,29 @@
              android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
              tools:context=".ui.TabFigure">
 
-    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/circlesButton"
-                android:text="Circles"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/squaresButton"
-                android:text="Squares"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/linesButton"
-                android:text="Lines"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-    </LinearLayout>
-
     <com.google.android.material.tabs.TabLayout
+            android:layout_margin="8dp"
+            app:tabMode="scrollable"
+            android:id="@+id/figureTabLayout"
+            app:tabIndicatorFullWidth="false"
+            style="@style/Widget.MaterialComponents.TabLayout.Colored"
+            app:tabIndicator="@drawable/cat_tabs_box_indicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
+        <com.google.android.material.tabs.TabItem
+                android:icon="@drawable/ic_sharp_crop_square_24px"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tabSquare"/>
+        <com.google.android.material.tabs.TabItem
+                android:icon="@drawable/ic_circle_24px"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tabCircle"/>
+        <com.google.android.material.tabs.TabItem
+                android:icon="@drawable/ic_line_24px"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tabLine"/>
     </com.google.android.material.tabs.TabLayout>
-
-
 </FrameLayout>
