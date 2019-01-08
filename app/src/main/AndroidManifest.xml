@@ -19,9 +19,8 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
-        <activity android:name=".ui.StartActivity">
+        <activity android:name=".ui.StartActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -43,7 +42,7 @@
                     android:resource="@xml/file_paths"/>
         </provider>
 
-        <activity android:name=".ui.EditorActivity">
+        <activity android:name=".ui.EditorActivity" android:screenOrientation="portrait">
         </activity>
     </application>
 

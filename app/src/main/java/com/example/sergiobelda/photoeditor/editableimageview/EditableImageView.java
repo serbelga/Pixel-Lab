@@ -1,23 +1,22 @@
 package com.example.sergiobelda.photoeditor.editableimageview;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import androidx.constraintlayout.utils.widget.ImageFilterView;
-import com.example.sergiobelda.photoeditor.editableimageview.figures.Circle;
-import com.example.sergiobelda.photoeditor.editableimageview.figures.Line;
-import com.example.sergiobelda.photoeditor.editableimageview.figures.Polygon;
-import com.example.sergiobelda.photoeditor.editableimageview.figures.Square;
+import com.example.sergiobelda.photoeditor.editableimageview.figures.*;
 import com.example.sergiobelda.photoeditor.editableimageview.paint.Path;
 
 import java.util.*;
 
 import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.PAINT;
+import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.STICKER;
 import static com.example.sergiobelda.photoeditor.editableimageview.figures.Figure.*;
 import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.FIGURE;
 
@@ -31,8 +30,7 @@ public class EditableImageView extends ImageFilterView {
     List<Line> lines;
     Map<Integer, Path> pathMap;
 
-    Stack<EditableImageViewProxy> stateStack;
-    Stack<List<Polygon>> statePolygon;
+    List<Square> squares;
 
     float contrast = 1;
 
@@ -50,9 +48,8 @@ public class EditableImageView extends ImageFilterView {
         paths = new ArrayList<>();
         lines = new ArrayList<>();
         polygons = new ArrayList<>();
+        squares = new ArrayList<>();
         pathMap = new HashMap<>();
-        stateStack = new Stack<>();
-        statePolygon = new Stack<>();
         currentStroke = STROKE_WIDTH;
         myContext = new MyContext(this);
         GestureListener gestureListener = new GestureListener();
@@ -76,6 +73,8 @@ public class EditableImageView extends ImageFilterView {
                     myContext.onTouchEvent(event);
                 }
                 break;
+            case STICKER :
+                break;
         }
         invalidate();
         return true;
@@ -86,10 +85,21 @@ public class EditableImageView extends ImageFilterView {
         super.onDraw(canvas);
         canvas.save();
         for (Polygon p : polygons) {
-            paint.setColor((int) p.getColor());
             if (p instanceof Circle) {
+                paint.setColor((int) p.getColor());
                 canvas.drawCircle(p.getX(), p.getY(), p.getSize(), paint);
+            } else if (p instanceof CropSquare) {
+                CropSquare c = (CropSquare) p;
+                if(c.getBitmap() != null) {
+                    canvas.drawBitmap(c.getBitmap(), c.getX() - c.getSize(), c.getY() - c.getSize(), paint);
+                } else {
+                    paint.setStyle(Paint.Style.STROKE);
+                    paint.setColor((int) p.getColor());
+                    canvas.drawRect(p.getX() - p.getSize(), p.getY() - p.getSize(), p.getX() + p.getSize(), p.getY() + p.getSize(), paint);
+                }
             } else if (p instanceof Square) {
+                paint.setStyle(Paint.Style.FILL);
+                paint.setColor((int) p.getColor());
                 canvas.drawRect(p.getX() - p.getSize(), p.getY() - p.getSize(), p.getX() + p.getSize(), p.getY() + p.getSize(), paint);
             }
         }
@@ -115,6 +125,7 @@ public class EditableImageView extends ImageFilterView {
             paint.setColor(l.getColor());
             canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
         }
+
 
         //this.setContrast(contrast);
         canvas.restore();
@@ -142,31 +153,42 @@ public class EditableImageView extends ImageFilterView {
      */
     public class GestureListener extends GestureDetector.SimpleOnGestureListener {
         Polygon p;
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            super.onLongPress(e);
+            p = getTouchedPolygon(e.getX(), e.getY());
+            if (p != null) {
+                Drawable d = myContext.getEditableImageView().getDrawable();
+                Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
+                bitmap = Bitmap.createScaledBitmap(bitmap, myContext.getEditableImageView().getWidth(), myContext.getEditableImageView().getHeight(), true);
+                Bitmap cropBitmap = Bitmap.createBitmap(bitmap,(int)(p.getX() - p.getSize()), (int)(p.getY() - p.getSize()), (int) p.getSize()*2, (int) p.getSize()*2);
+                if (p instanceof CropSquare) ((CropSquare) p).setBitmap(cropBitmap);
+            }
+
+        }
+
         @Override
         public boolean onDown(MotionEvent e) {
             p = getTouchedPolygon(e.getX(), e.getY());
+            if (e.getPointerCount() == 2) {
+                double delta_x = (e.getX(0) - e.getX(1));
+                double delta_y = (e.getY(0) - e.getY(1));
+                double radians = Math.atan2(delta_y, delta_x);
+                Log.d("Rotation", delta_x+" ## "+delta_y+" ## "+radians+" ## "
+                        +Math.toDegrees(radians));
+            }
             return true;
         }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if (p != null && figureMode != LINE) {
-                p.setX(e2.getX());
-                p.setY(e2.getY());
-                //newState();
+            if (!scaleDetector.isInProgress()) {
+                if (p != null && figureMode != LINE) {
+                    p.setX(e2.getX());
+                    p.setY(e2.getY());
+                }
             }
-            /*
-            distanceY = Math.max(-100, Math.min(100, distanceY));
-            Log.d("Distancia", String.valueOf(distanceY));
-            Log.d("Distancia", String.valueOf(distanceX));
-            if (e2.getAction() == MotionEvent.ACTION_UP) {
-                return false;
-            }
-            if (distanceY < 10 && distanceY > -10) {
-                contrast = 1;
-            } else {
-                contrast = Math.max(0.2f, Math.min(1.8f, contrast + distanceY / 100));
-            }*/
             return true;
         }
 
@@ -177,29 +199,22 @@ public class EditableImageView extends ImageFilterView {
                     case SQUARE:
                         Polygon s = new Square(e.getX(), e.getY(), 100, currentColor);
                         polygons.add(s);
-                        //newState();
                         break;
                     case CIRCLE:
                         Polygon c = new Circle(e.getX(), e.getY(), 100, currentColor);
                         polygons.add(c);
-                        //newState();
                         break;
                 }
+            } else if (editMode == STICKER) {
+                CropSquare s = new CropSquare(e.getX(), e.getY(), 100);
+                polygons.add(s);
             }
             return true;
         }
     }
 
-    private void newState() {
-        List<Polygon> polygons;
-        polygons = this.polygons;
-        statePolygon.push(polygons);
-    }
-
     private class ScaleListener
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        public Square s;
-        public Circle c;
         public Polygon p;
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
@@ -209,7 +224,6 @@ public class EditableImageView extends ImageFilterView {
             if (p != null) {
                 p.setSize(mScaleFactor);
             }
-            //newState();
             invalidate();
             return true;
         }

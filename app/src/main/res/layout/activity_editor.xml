@@ -32,6 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="centerInside"
+                android:adjustViewBounds="true"
                 android:id="@+id/myImageView"
                 android:src="@drawable/ic_launcher_background"
                 app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
@@ -113,7 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/tabFigure"/>
             <com.google.android.material.tabs.TabItem
-                    android:icon="@drawable/ic_sharp_face_24px"
+                    android:icon="@drawable/ic_sharp_crop_free_24px"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/tabSticker"/>
         </com.google.android.material.tabs.TabLayout>

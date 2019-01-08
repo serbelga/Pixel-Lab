@@ -18,4 +18,12 @@ public class MyContext {
     public void onTouchEvent(MotionEvent event) {
         strategyTool.onTouchEvent(event);
     }
+
+    public EditableImageView getEditableImageView() {
+        return editableImageView;
+    }
+
+    public void setEditableImageView(EditableImageView editableImageView) {
+        this.editableImageView = editableImageView;
+    }
 }
