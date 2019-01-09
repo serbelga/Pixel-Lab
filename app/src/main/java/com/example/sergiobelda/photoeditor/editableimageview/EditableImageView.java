@@ -57,6 +57,17 @@ public class EditableImageView extends ImageFilterView {
         scaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
+    public void clear(){
+        paths = new ArrayList<>();
+        lines = new ArrayList<>();
+        polygons = new ArrayList<>();
+        squares = new ArrayList<>();
+        pathMap = new HashMap<>();
+        currentStroke = STROKE_WIDTH;
+        paint.setStrokeWidth(STROKE_WIDTH);
+        invalidate();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);

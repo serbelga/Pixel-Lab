@@ -75,12 +75,14 @@ class EditorActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         //menuInflater.inflate(R.menu.undo_redo_menu, menu)
+        menuInflater.inflate(R.menu.clear_menu, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.itemId) {
             android.R.id.home -> onBackPressed()
+            R.id.clear -> editableImageView.clear();
         }
         return true
     }
