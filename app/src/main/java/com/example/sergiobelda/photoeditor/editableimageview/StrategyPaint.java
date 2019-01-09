@@ -6,6 +6,9 @@ import com.example.sergiobelda.photoeditor.editableimageview.paint.Path;
 
 import java.util.ArrayList;
 
+/**
+ * Manages the Paint tool
+ */
 public class StrategyPaint extends StrategyTool  {
 
     @Override

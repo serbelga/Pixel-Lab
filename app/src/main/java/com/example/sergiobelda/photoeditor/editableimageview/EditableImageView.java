@@ -5,7 +5,6 @@ import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -30,8 +29,6 @@ public class EditableImageView extends ImageFilterView {
     List<Line> lines;
     Map<Integer, Path> pathMap;
 
-    List<Square> squares;
-
     float contrast = 1;
 
     int currentColor = Color.WHITE;
@@ -48,7 +45,6 @@ public class EditableImageView extends ImageFilterView {
         paths = new ArrayList<>();
         lines = new ArrayList<>();
         polygons = new ArrayList<>();
-        squares = new ArrayList<>();
         pathMap = new HashMap<>();
         currentStroke = STROKE_WIDTH;
         myContext = new MyContext(this);
@@ -58,6 +54,25 @@ public class EditableImageView extends ImageFilterView {
         scaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
+    /**
+     * Clears the current canvas
+     */
+    public void clear(){
+        paths = new ArrayList<>();
+        lines = new ArrayList<>();
+        polygons = new ArrayList<>();
+        pathMap = new HashMap<>();
+        currentStroke = STROKE_WIDTH;
+        paint.setStrokeWidth(STROKE_WIDTH);
+        invalidate();
+    }
+
+    /**
+     * Strategy design pattern for manage different OnTouch events
+     * Manage some touch events
+     * @param event
+     * @return
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
@@ -71,9 +86,14 @@ public class EditableImageView extends ImageFilterView {
                 if (figureMode == LINE) {
                     myContext.setStrategyTool(new StrategyLine());
                     myContext.onTouchEvent(event);
+                } else {
+                    myContext.setStrategyTool(new StrategyRotation());
+                    myContext.onTouchEvent(event);
                 }
                 break;
             case STICKER :
+                myContext.setStrategyTool(new StrategyRotation());
+                myContext.onTouchEvent(event);
                 break;
         }
         invalidate();
@@ -90,17 +110,22 @@ public class EditableImageView extends ImageFilterView {
                 canvas.drawCircle(p.getX(), p.getY(), p.getSize(), paint);
             } else if (p instanceof CropSquare) {
                 CropSquare c = (CropSquare) p;
-                if(c.getBitmap() != null) {
-                    canvas.drawBitmap(c.getBitmap(), c.getX() - c.getSize(), c.getY() - c.getSize(), paint);
+                if (c.getBitmap() != null) {
+                    Bitmap scaleBitmap = Bitmap.createScaledBitmap(c.getBitmap(), (int) c.getSize()*2, (int) c.getSize()*2, true);
+                    canvas.drawBitmap(scaleBitmap, c.getX() - c.getSize(), c.getY() - c.getSize(), paint);
                 } else {
                     paint.setStyle(Paint.Style.STROKE);
                     paint.setColor((int) p.getColor());
                     canvas.drawRect(p.getX() - p.getSize(), p.getY() - p.getSize(), p.getX() + p.getSize(), p.getY() + p.getSize(), paint);
                 }
             } else if (p instanceof Square) {
+                Square s = (Square) p;
+                canvas.save();
                 paint.setStyle(Paint.Style.FILL);
-                paint.setColor((int) p.getColor());
-                canvas.drawRect(p.getX() - p.getSize(), p.getY() - p.getSize(), p.getX() + p.getSize(), p.getY() + p.getSize(), paint);
+                paint.setColor((int) s.getColor());
+                canvas.rotate(s.getRotation(), s.getX(), s.getY());
+                canvas.drawRect(s.getX() - s.getSize(), s.getY() - s.getSize(), s.getX() + s.getSize(), s.getY() + s.getSize(), paint);
+                canvas.restore();
             }
         }
         for (Path p : paths) {
@@ -125,24 +150,38 @@ public class EditableImageView extends ImageFilterView {
             paint.setColor(l.getColor());
             canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
         }
-
-
         //this.setContrast(contrast);
         canvas.restore();
     }
 
+    /**
+     * Sets the current Figure Mode
+     * @param figureMode
+     */
     public void setFigureMode(int figureMode) {
         this.figureMode = figureMode;
     }
 
+    /**
+     * Sets the current Edit Mode
+     * @param editMode
+     */
     public void setEditMode(int editMode) {
         this.editMode = editMode;
     }
 
+    /**
+     * Sets the current Color chosen on palette
+     * @param currentColor
+     */
     public void setCurrentColor(int currentColor) {
         this.currentColor = currentColor;
     }
 
+    /**
+     * Sets the current Stroke width
+     * @param currentStroke
+     */
     public void setCurrentStroke(float currentStroke) {
         this.currentStroke = currentStroke;
     }
@@ -153,45 +192,68 @@ public class EditableImageView extends ImageFilterView {
      */
     public class GestureListener extends GestureDetector.SimpleOnGestureListener {
         Polygon p;
-
+        float lastTouchX, lastTouchY;
         @Override
         public void onLongPress(MotionEvent e) {
             super.onLongPress(e);
             p = getTouchedPolygon(e.getX(), e.getY());
             if (p != null) {
-                Drawable d = myContext.getEditableImageView().getDrawable();
-                Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
-                bitmap = Bitmap.createScaledBitmap(bitmap, myContext.getEditableImageView().getWidth(), myContext.getEditableImageView().getHeight(), true);
-                Bitmap cropBitmap = Bitmap.createBitmap(bitmap,(int)(p.getX() - p.getSize()), (int)(p.getY() - p.getSize()), (int) p.getSize()*2, (int) p.getSize()*2);
-                if (p instanceof CropSquare) ((CropSquare) p).setBitmap(cropBitmap);
+                if (p instanceof CropSquare) {
+                    CropSquare c = (CropSquare) p;
+                    //Matrix matrix = new Matrix();
+                    //matrix.setRotate(c.getRotation(), c.getX(), c.getY());
+                    Drawable d = myContext.getEditableImageView().getDrawable();
+                    Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
+                    bitmap = Bitmap.createScaledBitmap(bitmap, myContext.getEditableImageView().getWidth(), myContext.getEditableImageView().getHeight(), true);
+                    //Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap,0,0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    Bitmap cropBitmap;
+                    int cropx0 = (int) (p.getX() - p.getSize());
+                    int cropy0 = (int) (p.getY() - p.getSize());
+                    if (cropx0 < 0) cropx0 = 0;
+                    if (cropy0 < 0) cropy0 = 0;
+                    if (p.getX() + p.getSize() > bitmap.getWidth()) {
+                        cropBitmap = Bitmap.createBitmap(bitmap, cropx0, cropy0, (int) (bitmap.getWidth() - (p.getX() - p.getSize())), (int) p.getSize()*2);
+                    } else if (p.getY() + p.getSize() > bitmap.getHeight()) {
+                        cropBitmap = Bitmap.createBitmap(bitmap, cropx0, cropy0, (int) (p.getSize()*2), (int) (bitmap.getHeight() - (p.getY() - p.getSize())));
+                    } else if (p.getY() + p.getSize() > bitmap.getHeight() && p.getX() + p.getSize() > bitmap.getWidth()) {
+                        cropBitmap = Bitmap.createBitmap(bitmap, cropx0, cropy0, (int) (bitmap.getWidth() - (p.getX() - p.getSize())), (int) (bitmap.getHeight() - (p.getY() - p.getSize())));
+                    } else {
+                        cropBitmap = Bitmap.createBitmap(bitmap, cropx0, cropy0, (int) p.getSize()*2, (int) p.getSize()*2);
+                    }
+                    c.setBitmap(cropBitmap);
+                }
             }
-
         }
 
         @Override
         public boolean onDown(MotionEvent e) {
             p = getTouchedPolygon(e.getX(), e.getY());
-            if (e.getPointerCount() == 2) {
-                double delta_x = (e.getX(0) - e.getX(1));
-                double delta_y = (e.getY(0) - e.getY(1));
-                double radians = Math.atan2(delta_y, delta_x);
-                Log.d("Rotation", delta_x+" ## "+delta_y+" ## "+radians+" ## "
-                        +Math.toDegrees(radians));
-            }
+            lastTouchX = e.getX();
+            lastTouchY = e.getY();
             return true;
         }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if (!scaleDetector.isInProgress()) {
-                if (p != null && figureMode != LINE) {
-                    p.setX(e2.getX());
-                    p.setY(e2.getY());
+            if (!scaleDetector.isInProgress() && ((editMode == FIGURE && figureMode != LINE) || editMode == STICKER) && editMode != PAINT) {
+                if (p != null) {
+                    float deltaX = e2.getX() - lastTouchX;
+                    float deltaY = e2.getY() - lastTouchY;
+                    p.setX(p.getX() + deltaX);
+                    p.setY(p.getY() + deltaY);
+                    lastTouchX = e2.getX();
+                    lastTouchY = e2.getY();
                 }
             }
             return true;
         }
 
+        /**
+         * If editMode is Figure -> Put a Square or Circle
+         * If editMode is Sticker -> Put a Crop Square
+         * @param e
+         * @return
+         */
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             if (editMode == FIGURE) {
@@ -218,17 +280,25 @@ public class EditableImageView extends ImageFilterView {
         public Polygon p;
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            p = getTouchedPolygon(detector.getFocusX(), detector.getFocusY());
-            mScaleFactor *= detector.getScaleFactor();
-            mScaleFactor = Math.max(85f, Math.min(250f, mScaleFactor));
-            if (p != null) {
-                p.setSize(mScaleFactor);
+            if (editMode != PAINT) {
+                p = getTouchedPolygon(detector.getFocusX(), detector.getFocusY());
+                mScaleFactor *= detector.getScaleFactor();
+                mScaleFactor = Math.max(85f, Math.min(250f, mScaleFactor));
+                if (p != null) {
+                    p.setSize(mScaleFactor);
+                }
+                invalidate();
             }
-            invalidate();
             return true;
         }
     }
 
+    /**
+     * Gets the touched Polygon on the view
+     * @param xTouch
+     * @param yTouch
+     * @return
+     */
     public Polygon getTouchedPolygon(float xTouch, float yTouch) {
         Polygon touched = null;
         for (Polygon p : polygons) {

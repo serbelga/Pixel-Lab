@@ -4,12 +4,14 @@ public class Square implements Polygon {
     private float x, y;
     private double side;
     private float color;
+    private float rotation;
 
     public Square(float x, float y, double side, int color) {
         this.x = x;
         this.y = y;
         this.side = side;
         this.color = color;
+        this.rotation = 0;
     }
 
     @Override
@@ -55,5 +57,13 @@ public class Square implements Polygon {
     @Override
     public void setSize(float size) {
         this.setSide(size);
+    }
+
+    public float getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(float rotation) {
+        this.rotation = rotation;
     }
 }

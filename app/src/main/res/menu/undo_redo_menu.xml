@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:enabled="false"
             android:id="@+id/undo"
             android:icon="@drawable/ic_sharp_undo_24px"
             app:showAsAction="ifRoom"
             android:title="@string/undo">
     </item>
     <item
-            android:enabled="false"
             android:id="@+id/export"
             android:icon="@drawable/ic_sharp_redo_24px"
             app:showAsAction="ifRoom"

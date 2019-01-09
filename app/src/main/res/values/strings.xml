@@ -10,4 +10,5 @@
     <string name="redo">Rehacer</string>
     <string name="tools">Herramientas</string>
     <string name="export">Exportar</string>
+    <string name="clean">Limpiar</string>
 </resources>
