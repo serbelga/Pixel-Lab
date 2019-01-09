@@ -93,7 +93,8 @@ public class EditableImageView extends ImageFilterView {
             } else if (p instanceof CropSquare) {
                 CropSquare c = (CropSquare) p;
                 if(c.getBitmap() != null) {
-                    canvas.drawBitmap(c.getBitmap(), c.getX() - c.getSize(), c.getY() - c.getSize(), paint);
+                    Bitmap scaleBitmap = Bitmap.createScaledBitmap(c.getBitmap(), (int) c.getSize()*2, (int) c.getSize()*2, true);
+                    canvas.drawBitmap(scaleBitmap, c.getX() - c.getSize(), c.getY() - c.getSize(), paint);
                 } else {
                     paint.setStyle(Paint.Style.STROKE);
                     paint.setColor((int) p.getColor());
@@ -201,8 +202,8 @@ public class EditableImageView extends ImageFilterView {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if (!scaleDetector.isInProgress()) {
-                if (p != null && figureMode != LINE) {
+            if (!scaleDetector.isInProgress() && figureMode != LINE && editMode != PAINT) {
+                if (p != null) {
                     p.setX(e2.getX());
                     p.setY(e2.getY());
                 }
