@@ -74,6 +74,8 @@ public class EditableImageView extends ImageFilterView {
                 }
                 break;
             case STICKER :
+                myContext.setStrategyTool(new StrategyRotation());
+                myContext.onTouchEvent(event);
                 break;
         }
         invalidate();
@@ -97,10 +99,15 @@ public class EditableImageView extends ImageFilterView {
                     paint.setColor((int) p.getColor());
                     canvas.drawRect(p.getX() - p.getSize(), p.getY() - p.getSize(), p.getX() + p.getSize(), p.getY() + p.getSize(), paint);
                 }
+                //canvas.restore();
             } else if (p instanceof Square) {
+                Square s = (Square) p;
+                canvas.save();
                 paint.setStyle(Paint.Style.FILL);
-                paint.setColor((int) p.getColor());
-                canvas.drawRect(p.getX() - p.getSize(), p.getY() - p.getSize(), p.getX() + p.getSize(), p.getY() + p.getSize(), paint);
+                paint.setColor((int) s.getColor());
+                canvas.rotate(s.getRotation(), s.getX(), s.getY());
+                canvas.drawRect(s.getX() - s.getSize(), s.getY() - s.getSize(), s.getX() + s.getSize(), s.getY() + s.getSize(), paint);
+                canvas.restore();
             }
         }
         for (Path p : paths) {
@@ -159,25 +166,36 @@ public class EditableImageView extends ImageFilterView {
             super.onLongPress(e);
             p = getTouchedPolygon(e.getX(), e.getY());
             if (p != null) {
-                Drawable d = myContext.getEditableImageView().getDrawable();
-                Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
-                bitmap = Bitmap.createScaledBitmap(bitmap, myContext.getEditableImageView().getWidth(), myContext.getEditableImageView().getHeight(), true);
-                Bitmap cropBitmap = Bitmap.createBitmap(bitmap,(int)(p.getX() - p.getSize()), (int)(p.getY() - p.getSize()), (int) p.getSize()*2, (int) p.getSize()*2);
-                if (p instanceof CropSquare) ((CropSquare) p).setBitmap(cropBitmap);
+                if (p instanceof CropSquare) {
+                    CropSquare c = (CropSquare) p;
+                    //Matrix matrix = new Matrix();
+                    //matrix.setRotate(c.getRotation(), c.getX(), c.getY());
+                    Drawable d = myContext.getEditableImageView().getDrawable();
+                    Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
+                    bitmap = Bitmap.createScaledBitmap(bitmap, myContext.getEditableImageView().getWidth(), myContext.getEditableImageView().getHeight(), true);
+                    //Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap,0,0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    Bitmap cropBitmap;
+                    int cropx0 = (int) (p.getX() - p.getSize());
+                    int cropy0 = (int) (p.getY() - p.getSize());
+                    if (cropx0 < 0) cropx0 = 0;
+                    if (cropy0 < 0) cropy0 = 0;
+                    if (p.getX() + p.getSize() > bitmap.getWidth()) {
+                        cropBitmap = Bitmap.createBitmap(bitmap, cropx0, cropy0, (int) (bitmap.getWidth() - (p.getX() - p.getSize())), (int) p.getSize()*2);
+                    } else if (p.getY() + p.getSize() > bitmap.getHeight()) {
+                        cropBitmap = Bitmap.createBitmap(bitmap, cropx0, cropy0, (int) (p.getSize()*2), (int) (bitmap.getHeight() - (p.getY() - p.getSize())));
+                    } else if (p.getY() + p.getSize() > bitmap.getHeight() && p.getX() + p.getSize() > bitmap.getWidth()) {
+                        cropBitmap = Bitmap.createBitmap(bitmap, cropx0, cropy0, (int) (bitmap.getWidth() - (p.getX() - p.getSize())), (int) (bitmap.getHeight() - (p.getY() - p.getSize())));
+                    } else {
+                        cropBitmap = Bitmap.createBitmap(bitmap, cropx0, cropy0, (int) p.getSize()*2, (int) p.getSize()*2);
+                    }
+                    c.setBitmap(cropBitmap);
+                }
             }
-
         }
 
         @Override
         public boolean onDown(MotionEvent e) {
             p = getTouchedPolygon(e.getX(), e.getY());
-            if (e.getPointerCount() == 2) {
-                double delta_x = (e.getX(0) - e.getX(1));
-                double delta_y = (e.getY(0) - e.getY(1));
-                double radians = Math.atan2(delta_y, delta_x);
-                Log.d("Rotation", delta_x+" ## "+delta_y+" ## "+radians+" ## "
-                        +Math.toDegrees(radians));
-            }
             return true;
         }
 

@@ -5,6 +5,7 @@ import android.graphics.Color;
 
 public class CropSquare extends Square {
     Bitmap bitmap;
+
     public CropSquare(float x, float y, double side) {
         super(x, y, side, Color.BLACK);
     }
