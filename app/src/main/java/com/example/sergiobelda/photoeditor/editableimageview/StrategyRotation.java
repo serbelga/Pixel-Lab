@@ -5,7 +5,11 @@ import android.view.MotionEvent;
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Polygon;
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Square;
 
+/**
+ * Manages the Rotation of Square
+ */
 public class StrategyRotation extends StrategyTool {
+
     @Override
     void onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {

@@ -3,7 +3,11 @@ package com.example.sergiobelda.photoeditor.editableimageview;
 import android.view.MotionEvent;
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Line;
 
+/**
+ * Manages the Paint tool
+ */
 public class StrategyLine extends StrategyTool {
+
     @Override
     public void onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {

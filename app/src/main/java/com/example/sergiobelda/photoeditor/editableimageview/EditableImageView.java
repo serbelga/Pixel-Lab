@@ -29,8 +29,6 @@ public class EditableImageView extends ImageFilterView {
     List<Line> lines;
     Map<Integer, Path> pathMap;
 
-    List<Square> squares;
-
     float contrast = 1;
 
     int currentColor = Color.WHITE;
@@ -47,7 +45,6 @@ public class EditableImageView extends ImageFilterView {
         paths = new ArrayList<>();
         lines = new ArrayList<>();
         polygons = new ArrayList<>();
-        squares = new ArrayList<>();
         pathMap = new HashMap<>();
         currentStroke = STROKE_WIDTH;
         myContext = new MyContext(this);
@@ -57,17 +54,25 @@ public class EditableImageView extends ImageFilterView {
         scaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
+    /**
+     * Clears the current canvas
+     */
     public void clear(){
         paths = new ArrayList<>();
         lines = new ArrayList<>();
         polygons = new ArrayList<>();
-        squares = new ArrayList<>();
         pathMap = new HashMap<>();
         currentStroke = STROKE_WIDTH;
         paint.setStrokeWidth(STROKE_WIDTH);
         invalidate();
     }
 
+    /**
+     * Strategy design pattern for manage different OnTouch events
+     * Manage some touch events
+     * @param event
+     * @return
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
@@ -105,7 +110,7 @@ public class EditableImageView extends ImageFilterView {
                 canvas.drawCircle(p.getX(), p.getY(), p.getSize(), paint);
             } else if (p instanceof CropSquare) {
                 CropSquare c = (CropSquare) p;
-                if(c.getBitmap() != null) {
+                if (c.getBitmap() != null) {
                     Bitmap scaleBitmap = Bitmap.createScaledBitmap(c.getBitmap(), (int) c.getSize()*2, (int) c.getSize()*2, true);
                     canvas.drawBitmap(scaleBitmap, c.getX() - c.getSize(), c.getY() - c.getSize(), paint);
                 } else {
@@ -113,7 +118,6 @@ public class EditableImageView extends ImageFilterView {
                     paint.setColor((int) p.getColor());
                     canvas.drawRect(p.getX() - p.getSize(), p.getY() - p.getSize(), p.getX() + p.getSize(), p.getY() + p.getSize(), paint);
                 }
-                //canvas.restore();
             } else if (p instanceof Square) {
                 Square s = (Square) p;
                 canvas.save();
@@ -150,18 +154,34 @@ public class EditableImageView extends ImageFilterView {
         canvas.restore();
     }
 
+    /**
+     * Sets the current Figure Mode
+     * @param figureMode
+     */
     public void setFigureMode(int figureMode) {
         this.figureMode = figureMode;
     }
 
+    /**
+     * Sets the current Edit Mode
+     * @param editMode
+     */
     public void setEditMode(int editMode) {
         this.editMode = editMode;
     }
 
+    /**
+     * Sets the current Color chosen on palette
+     * @param currentColor
+     */
     public void setCurrentColor(int currentColor) {
         this.currentColor = currentColor;
     }
 
+    /**
+     * Sets the current Stroke width
+     * @param currentStroke
+     */
     public void setCurrentStroke(float currentStroke) {
         this.currentStroke = currentStroke;
     }
@@ -228,6 +248,12 @@ public class EditableImageView extends ImageFilterView {
             return true;
         }
 
+        /**
+         * If editMode is Figure -> Put a Square or Circle
+         * If editMode is Sticker -> Put a Crop Square
+         * @param e
+         * @return
+         */
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             if (editMode == FIGURE) {
@@ -267,6 +293,12 @@ public class EditableImageView extends ImageFilterView {
         }
     }
 
+    /**
+     * Gets the touched Polygon on the view
+     * @param xTouch
+     * @param yTouch
+     * @return
+     */
     public Polygon getTouchedPolygon(float xTouch, float yTouch) {
         Polygon touched = null;
         for (Polygon p : polygons) {
