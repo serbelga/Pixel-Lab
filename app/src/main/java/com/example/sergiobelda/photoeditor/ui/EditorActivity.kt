@@ -55,7 +55,7 @@ class EditorActivity : AppCompatActivity() {
 
     private fun initializeSave() {
         saveFab.setOnClickListener {
-            saveImage()
+            checkWriteExternalStoragePermission()
         }
     }
 
@@ -160,6 +160,15 @@ class EditorActivity : AppCompatActivity() {
             )
         } else {
             saveImage()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> if (grantResults.isNotEmpty() && grantResults.get(0) == PackageManager.PERMISSION_GRANTED) {
+                saveImage()
+            }
         }
     }
 
