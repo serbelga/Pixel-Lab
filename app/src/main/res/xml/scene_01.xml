@@ -13,7 +13,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/myImageView"
                 android:src="@drawable/ic_launcher_background_size"
-                motion:layout_constraintVertical_bias="0.0"
                 motion:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
                 motion:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp" android:layout_marginTop="16dp"
                 motion:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="16dp"
@@ -29,10 +28,9 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/myImageView"
                 android:src="@drawable/ic_launcher_background_size"
-                motion:layout_constraintVertical_bias="0.0"
                 motion:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
                 motion:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp" android:layout_marginTop="16dp"
-                motion:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="64dp"
+                motion:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="16dp"
                 motion:layout_constraintBottom_toBottomOf="parent">
         </Constraint>
     </ConstraintSet>

@@ -5,7 +5,6 @@ import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -71,6 +70,9 @@ public class EditableImageView extends ImageFilterView {
                 if (figureMode == LINE) {
                     myContext.setStrategyTool(new StrategyLine());
                     myContext.onTouchEvent(event);
+                } else {
+                    myContext.setStrategyTool(new StrategyRotation());
+                    myContext.onTouchEvent(event);
                 }
                 break;
             case STICKER :
@@ -133,8 +135,6 @@ public class EditableImageView extends ImageFilterView {
             paint.setColor(l.getColor());
             canvas.drawLine(l.getX0(), l.getY0(), l.getXf(), l.getYf(), paint);
         }
-
-
         //this.setContrast(contrast);
         canvas.restore();
     }
@@ -161,7 +161,7 @@ public class EditableImageView extends ImageFilterView {
      */
     public class GestureListener extends GestureDetector.SimpleOnGestureListener {
         Polygon p;
-
+        float lastTouchX, lastTouchY;
         @Override
         public void onLongPress(MotionEvent e) {
             super.onLongPress(e);
@@ -197,15 +197,21 @@ public class EditableImageView extends ImageFilterView {
         @Override
         public boolean onDown(MotionEvent e) {
             p = getTouchedPolygon(e.getX(), e.getY());
+            lastTouchX = e.getX();
+            lastTouchY = e.getY();
             return true;
         }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if (!scaleDetector.isInProgress() && figureMode != LINE && editMode != PAINT) {
+            if (!scaleDetector.isInProgress() && ((editMode == FIGURE && figureMode != LINE) || editMode == STICKER) && editMode != PAINT) {
                 if (p != null) {
-                    p.setX(e2.getX());
-                    p.setY(e2.getY());
+                    float deltaX = e2.getX() - lastTouchX;
+                    float deltaY = e2.getY() - lastTouchY;
+                    p.setX(p.getX() + deltaX);
+                    p.setY(p.getY() + deltaY);
+                    lastTouchX = e2.getX();
+                    lastTouchY = e2.getY();
                 }
             }
             return true;
@@ -237,13 +243,15 @@ public class EditableImageView extends ImageFilterView {
         public Polygon p;
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            p = getTouchedPolygon(detector.getFocusX(), detector.getFocusY());
-            mScaleFactor *= detector.getScaleFactor();
-            mScaleFactor = Math.max(85f, Math.min(250f, mScaleFactor));
-            if (p != null) {
-                p.setSize(mScaleFactor);
+            if (editMode != PAINT) {
+                p = getTouchedPolygon(detector.getFocusX(), detector.getFocusY());
+                mScaleFactor *= detector.getScaleFactor();
+                mScaleFactor = Math.max(85f, Math.min(250f, mScaleFactor));
+                if (p != null) {
+                    p.setSize(mScaleFactor);
+                }
+                invalidate();
             }
-            invalidate();
             return true;
         }
     }
