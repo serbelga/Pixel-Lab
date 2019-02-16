@@ -14,10 +14,8 @@ import com.example.sergiobelda.photoeditor.editableimageview.paint.Path;
 
 import java.util.*;
 
-import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.PAINT;
-import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.STICKER;
+import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.*;
 import static com.example.sergiobelda.photoeditor.editableimageview.figures.Figure.*;
-import static com.example.sergiobelda.photoeditor.editableimageview.EditorTool.FIGURE;
 
 public class EditableImageView extends ImageFilterView {
     private float mScaleFactor = 1.f;
