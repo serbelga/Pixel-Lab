@@ -3,6 +3,7 @@ package com.example.sergiobelda.photoeditor.editableimageview;
 import android.view.MotionEvent;
 import com.example.sergiobelda.photoeditor.editableimageview.figures.Line;
 import com.example.sergiobelda.photoeditor.editableimageview.paint.Path;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 

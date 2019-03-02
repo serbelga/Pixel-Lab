@@ -21,6 +21,9 @@ import com.bumptech.glide.Glide
 import com.example.sergiobelda.photoeditor.R
 import com.example.sergiobelda.photoeditor.editableimageview.EditableImageView
 import com.example.sergiobelda.photoeditor.editableimageview.EditorTool.*
+import com.example.sergiobelda.photoeditor.editableimageview.EditorTool.Companion.FIGURE
+import com.example.sergiobelda.photoeditor.editableimageview.EditorTool.Companion.PAINT
+import com.example.sergiobelda.photoeditor.editableimageview.EditorTool.Companion.STICKER
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -230,7 +233,7 @@ class EditorActivity : AppCompatActivity() {
     }
 
     private fun initializeViewPager() {
-        val pagerAdapter = ToolsViewPagerAdapter(supportFragmentManager, toolsTabLayout.tabCount, editableImageView)
+        val pagerAdapter = ToolsViewPagerAdapter(supportFragmentManager, toolsTabLayout.tabCount)
         toolsViewPager.adapter = pagerAdapter
         toolsViewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(toolsTabLayout))
     }
@@ -261,7 +264,7 @@ class EditorActivity : AppCompatActivity() {
         Glide.with(this).load(uri).into(myImageView)
     }
 
-    private class ToolsViewPagerAdapter(fm: FragmentManager, var tabsNum: Int, var editableImageView: EditableImageView) : FragmentPagerAdapter(fm) {
+    inner class ToolsViewPagerAdapter(fm: FragmentManager, var tabsNum: Int) : FragmentPagerAdapter(fm) {
         override fun getItem(position: Int): Fragment {
             var fragment: Fragment? = null
             if (position == PAINT) {
