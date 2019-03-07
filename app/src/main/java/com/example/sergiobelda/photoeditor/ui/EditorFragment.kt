@@ -6,8 +6,11 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 
 import com.example.sergiobelda.photoeditor.R
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.activity_editor.*
 import kotlinx.android.synthetic.main.fragment_editor.*
 
 /**
@@ -15,6 +18,7 @@ import kotlinx.android.synthetic.main.fragment_editor.*
  *
  */
 class EditorFragment : Fragment() {
+    private lateinit var toolsBottomSheetBehavior: BottomSheetBehavior<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +41,47 @@ class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         imageView.setImageResource(R.color.gray)
-        button.setOnClickListener {
-            val extras = FragmentNavigatorExtras(
-                imageView to "imageView")
-            view.findNavController().navigate(R.id.saveAction,
-                null, // Bundle of args
-                null, // NavOptions
-                extras)
-        }
 
+
+        initializeBottomSheetBehavior()
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.export -> {
+                val extras = FragmentNavigatorExtras(
+                    imageView to "imageView"
+                )
+                findNavController().navigate(R.id.saveAction,
+                    null, // Bundle of args
+                    null, // NavOptions
+                    extras)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun initializeBottomSheetBehavior() {
+        toolsBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        toolsBottomSheetBehavior.setBottomSheetCallback(createBottomSheetCallback())
+        toolsBottomSheetBehavior.state =  BottomSheetBehavior.STATE_COLLAPSED
+    }
+
+    private fun createBottomSheetCallback(): BottomSheetBehavior.BottomSheetCallback? {
+        return object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            }
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        //var tabPosition = toolsTabLayout.selectedTabPosition
+                        //myImageView.setEditMode(tabPosition)
+                    }
+                }
+            }
+
+        }
     }
 }

@@ -11,4 +11,5 @@
     <string name="tools">Herramientas</string>
     <string name="export">Exportar</string>
     <string name="clean">Limpiar</string>
+    <string name="save">Guardar</string>
 </resources>

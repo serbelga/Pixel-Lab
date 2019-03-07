@@ -7,9 +7,15 @@
             android:title="@string/undo">
     </item>
     <item
-            android:id="@+id/export"
+            android:id="@+id/redo"
             android:icon="@drawable/ic_sharp_redo_24px"
             app:showAsAction="ifRoom"
             android:title="@string/redo">
+    </item>
+    <item
+            android:id="@+id/export"
+            android:icon="@drawable/ic_outline_share_24px"
+            app:showAsAction="always"
+            android:title="@string/export">
     </item>
 </menu>
