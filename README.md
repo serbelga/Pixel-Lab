@@ -9,4 +9,4 @@ Photo Editor
 * Android KTX
 * Glide
 * Material Components
-* Navigation Android Architecture Component - androidx.navigation:navigation-fragment-ktx and androidx.navigation:navigation-ui-ktx
+* Navigation Architecture Component - androidx.navigation:navigation-fragment-ktx and androidx.navigation:navigation-ui-ktx
