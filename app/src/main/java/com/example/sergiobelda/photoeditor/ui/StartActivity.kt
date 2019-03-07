@@ -29,7 +29,9 @@ class StartActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
         cameraButton.setOnClickListener {
-            checkCameraPermission()
+            //checkCameraPermission()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
         galleryButton.setOnClickListener {
             var pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
